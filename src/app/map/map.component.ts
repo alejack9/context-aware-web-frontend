@@ -1,5 +1,5 @@
-import { Component, AfterViewInit } from '@angular/core';
-import { map, Map, tileLayer } from 'leaflet';
+import { Component, AfterViewInit, Input } from '@angular/core';
+import { LatLng, map, Map, tileLayer } from 'leaflet';
 
 @Component({
   selector: 'app-map',
@@ -7,12 +7,13 @@ import { map, Map, tileLayer } from 'leaflet';
   styleUrls: ['./map.component.scss'],
 })
 export class MapComponent implements AfterViewInit {
+  @Input('starting-coordinates') startingCoordinates: LatLng = new LatLng(0, 0);
   private map: Map;
 
   private initMap(): void {
     this.map = map('map', {
-      center: [39.8282, -98.5795],
-      zoom: 3,
+      center: this.startingCoordinates,
+      zoom: 9,
     });
 
     const tiles = tileLayer(
