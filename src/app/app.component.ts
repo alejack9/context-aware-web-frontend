@@ -1,13 +1,26 @@
 import { LatLng } from 'leaflet';
-import { Component, OnInit } from '@angular/core';
+import {
+  OnInit,
+  AfterViewInit,
+  Component,
+  ElementRef,
+  HostListener,
+  ViewChild,
+} from '@angular/core';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
   userCoordinates: LatLng;
+  mapHeight: number;
+  @ViewChild('checkboxContainer') checkBoxContainerElement: ElementRef;
+
+  @HostListener('window:resize', ['$event']) sizeChange(event: any) {
+    this.changeMapHeight(event.target.innerHeight);
+  }
 
   ngOnInit(): void {
     const defaultCoordinates = new LatLng(43.090911, 13.428028);
@@ -32,5 +45,14 @@ export class AppComponent implements OnInit {
         maximumAge: 0,
       }
     );
+  }
+
+  ngAfterViewInit(): void {
+    this.changeMapHeight(window.innerHeight);
+  }
+
+  changeMapHeight(windowHeight: number) {
+    this.mapHeight =
+      windowHeight - this.checkBoxContainerElement.nativeElement.offsetHeight;
   }
 }
