@@ -13,7 +13,11 @@ import { LatLng, map, Map, tileLayer } from 'leaflet';
   styleUrls: ['./map.component.scss'],
 })
 export class MapComponent {
-  @Input('starting-coordinates') startingCoordinates: LatLng = new LatLng(0, 0);
+  @Input('starting-coordinates') set startingCoordinates(value: LatLng) {
+    if (this.map) {
+      this.map.setView(value, 9);
+    }
+  }
   private map: Map;
   @ViewChild('map') mapElement: ElementRef;
   @Input('map-height') set mapHeight(value: number) {
@@ -30,7 +34,7 @@ export class MapComponent {
 
   initMap(): void {
     this.map = map('map', {
-      center: this.startingCoordinates,
+      center: [0, 0],
       zoom: 9,
     });
 
@@ -40,7 +44,7 @@ export class MapComponent {
         maxZoom: 18,
         minZoom: 3,
         attribution:
-          '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+          '&copy; <a target="_blank" href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       }
     );
 

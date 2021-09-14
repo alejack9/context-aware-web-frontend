@@ -1,3 +1,4 @@
+import { UserCoordinatesGetterService } from './services/user-coordinates-getter/user-coordinates-getter.service';
 import { MapComponent } from './map/map.component';
 import { LatLng } from 'leaflet';
 import {
@@ -25,31 +26,20 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.changeMapHeight(event.target.innerHeight);
   }
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private userCoordinatesGetter: UserCoordinatesGetterService
+  ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     const defaultCoordinates = new LatLng(43.090911, 13.428028);
-    this.userCoordinates = defaultCoordinates;
-    if (!navigator.geolocation) {
-      console.warn('Geolocalization not supported in current browser.');
+    try {
+      this.userCoordinates =
+        await this.userCoordinatesGetter.getUserCoordinates();
+    } catch (reason: any) {
+      if (reason) console.warn(reason);
       this.userCoordinates = defaultCoordinates;
     }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        this.userCoordinates = new LatLng(
-          pos.coords.latitude,
-          pos.coords.longitude
-        );
-      },
-      (_) => {
-        this.userCoordinates = defaultCoordinates;
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0,
-      }
-    );
   }
 
   ngAfterViewInit() {

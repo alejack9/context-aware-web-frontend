@@ -1,3 +1,4 @@
+import { UserCoordinatesGetterService } from './services/user-coordinates-getter/user-coordinates-getter.service';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -8,7 +9,7 @@ import { CheckboxComponent } from './checkbox/checkbox.component';
 @NgModule({
   declarations: [AppComponent, MapComponent, CheckboxComponent],
   imports: [BrowserModule],
-  providers: [],
+  providers: [UserCoordinatesGetterService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
