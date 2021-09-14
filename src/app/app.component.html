@@ -1,16 +1,16 @@
 <div class="container">
-  <section #topSection class="topSection">
-    <h1>Context Aware Project</h1>
+  <section #topSection>
+    <h1 class="title">Context Aware Project</h1>
   </section>
   <app-map
     #mapComponent
     [map-height]="mapHeight"
     [starting-coordinates]="userCoordinates"
   >
-    <div class="overlay-title">Options</div>
+    <div class="mapoverlay-title">Options</div>
     <hr />
     <app-checkbox id="show_samples">Show Samples</app-checkbox>
     <app-checkbox id="show_kmean">Show K-Mean</app-checkbox>
-    <app-checkbox id="show_heatmap">Show Heatmap</app-checkbox></app-map
-  >
+    <app-checkbox id="show_heatmap">Show Heatmap</app-checkbox>
+  </app-map>
 </div>
