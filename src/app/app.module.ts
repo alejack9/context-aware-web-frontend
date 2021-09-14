@@ -1,4 +1,4 @@
-import { UserCoordinatesGetterService } from './services/user-coordinates-getter/user-coordinates-getter.service';
+import { UserCoordinatesGetterService } from './services/user-coordinates-getter.service';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 

@@ -1,4 +1,4 @@
-import { UserCoordinatesGetterService } from './services/user-coordinates-getter/user-coordinates-getter.service';
+import { UserCoordinatesGetterService } from './services/user-coordinates-getter.service';
 import { MapComponent } from './map/map.component';
 import { LatLng } from 'leaflet';
 import {
