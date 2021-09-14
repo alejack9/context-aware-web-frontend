@@ -44,6 +44,8 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.mapComponent.initMap();
+    this.mapComponent.enableMarkers();
+
     this.cdr.detectChanges();
     this.changeMapHeight(window.innerHeight);
     this.cdr.detectChanges();

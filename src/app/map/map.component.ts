@@ -6,6 +6,7 @@ import {
   Renderer2,
 } from '@angular/core';
 import { LatLng, map, Map, tileLayer } from 'leaflet';
+import { MarkerService } from '../services/marker.service';
 
 @Component({
   selector: 'app-map',
@@ -19,6 +20,7 @@ export class MapComponent {
     }
   }
   private map: Map;
+
   @ViewChild('map') mapElement: ElementRef;
   @Input('map-height') set mapHeight(value: number) {
     if (!this.mapElement) return;
@@ -51,5 +53,12 @@ export class MapComponent {
     tiles.addTo(this.map);
   }
 
-  constructor(private renderer: Renderer2) {}
+  constructor(
+    private renderer: Renderer2,
+    private markerService: MarkerService
+  ) {}
+
+  enableMarkers(): void {
+    this.markerService.makeSamplesMarkers(this.map);
+  }
 }
