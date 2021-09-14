@@ -18,7 +18,7 @@ import {
 export class AppComponent implements OnInit, AfterViewInit {
   userCoordinates: LatLng;
   mapHeight: number;
-  @ViewChild('checkboxContainer') checkBoxContainerElement: ElementRef;
+  @ViewChild('topSection') topSectionElement: ElementRef;
   @ViewChild('mapComponent') mapComponent: MapComponent;
 
   @HostListener('window:resize', ['$event']) sizeChange(event: any) {
@@ -61,6 +61,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   changeMapHeight(windowHeight: number) {
     this.mapHeight =
-      windowHeight - this.checkBoxContainerElement.nativeElement.offsetHeight;
+      windowHeight - this.topSectionElement.nativeElement.offsetHeight;
   }
 }

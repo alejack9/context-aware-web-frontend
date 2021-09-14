@@ -1,12 +1,16 @@
 <div class="container">
-  <div #checkboxContainer class="checkboxContainer">
-    <input type="checkbox" id="" />
-    <input type="checkbox" id="" />
-    <input type="checkbox" id="" />
-  </div>
+  <section #topSection class="topSection">
+    <h1>Context Aware Project</h1>
+  </section>
   <app-map
     #mapComponent
     [map-height]="mapHeight"
     [starting-coordinates]="userCoordinates"
-  ></app-map>
+  >
+    <div class="overlay-title">Options</div>
+    <hr />
+    <app-checkbox id="show_samples">Show Samples</app-checkbox>
+    <app-checkbox id="show_kmean">Show K-Mean</app-checkbox>
+    <app-checkbox id="show_heatmap">Show Heatmap</app-checkbox></app-map
+  >
 </div>
