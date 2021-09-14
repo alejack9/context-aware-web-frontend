@@ -4,5 +4,9 @@
     <input type="checkbox" id="" />
     <input type="checkbox" id="" />
   </div>
-  <app-map [map-height]="mapHeight"></app-map>
+  <app-map
+    #mapComponent
+    [map-height]="mapHeight"
+    [starting-coordinates]="userCoordinates"
+  ></app-map>
 </div>

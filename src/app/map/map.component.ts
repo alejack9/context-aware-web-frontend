@@ -1,6 +1,5 @@
 import {
   Component,
-  AfterViewInit,
   Input,
   ViewChild,
   ElementRef,
@@ -13,29 +12,23 @@ import { LatLng, map, Map, tileLayer } from 'leaflet';
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
 })
-export class MapComponent implements AfterViewInit {
+export class MapComponent {
   @Input('starting-coordinates') startingCoordinates: LatLng = new LatLng(0, 0);
   private map: Map;
   @ViewChild('map') mapElement: ElementRef;
   @Input('map-height') set mapHeight(value: number) {
-    if (!this.mapElement) {
-      console.log('undefined map element');
-      return;
-    }
-
-    console.log('defined map element');
+    if (!this.mapElement) return;
 
     this.renderer.setStyle(
       this.mapElement.nativeElement,
       'height',
-      value + 'px'
+      `${value}px`
     );
-    console.log(this.mapElement.nativeElement);
 
     this.map.invalidateSize();
   }
 
-  private initMap(): void {
+  initMap(): void {
     this.map = map('map', {
       center: this.startingCoordinates,
       zoom: 9,
@@ -55,8 +48,4 @@ export class MapComponent implements AfterViewInit {
   }
 
   constructor(private renderer: Renderer2) {}
-
-  ngAfterViewInit(): void {
-    this.initMap();
-  }
 }

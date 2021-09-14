@@ -1,11 +1,13 @@
+import { MapComponent } from './map/map.component';
 import { LatLng } from 'leaflet';
 import {
   OnInit,
-  AfterViewInit,
   Component,
   ElementRef,
   HostListener,
   ViewChild,
+  ChangeDetectorRef,
+  AfterViewInit,
 } from '@angular/core';
 
 @Component({
@@ -17,14 +19,17 @@ export class AppComponent implements OnInit, AfterViewInit {
   userCoordinates: LatLng;
   mapHeight: number;
   @ViewChild('checkboxContainer') checkBoxContainerElement: ElementRef;
+  @ViewChild('mapComponent') mapComponent: MapComponent;
 
   @HostListener('window:resize', ['$event']) sizeChange(event: any) {
     this.changeMapHeight(event.target.innerHeight);
   }
 
+  constructor(private cdr: ChangeDetectorRef) {}
+
   ngOnInit(): void {
     const defaultCoordinates = new LatLng(43.090911, 13.428028);
-
+    this.userCoordinates = defaultCoordinates;
     if (!navigator.geolocation) {
       console.warn('Geolocalization not supported in current browser.');
       this.userCoordinates = defaultCoordinates;
@@ -47,8 +52,11 @@ export class AppComponent implements OnInit, AfterViewInit {
     );
   }
 
-  ngAfterViewInit(): void {
+  ngAfterViewInit() {
+    this.mapComponent.initMap();
+    this.cdr.detectChanges();
     this.changeMapHeight(window.innerHeight);
+    this.cdr.detectChanges();
   }
 
   changeMapHeight(windowHeight: number) {
