@@ -58,7 +58,8 @@ export class MapComponent {
     private markerService: MarkerService
   ) {}
 
-  enableMarkers(): void {
-    this.markerService.makeSamplesMarkers(this.map);
+  enableMarkers(toEnable = true): void {
+    if (toEnable) this.markerService.makeSamplesMarkers(this.map);
+    else this.markerService.removeMarkers(this.map);
   }
 }

@@ -8,11 +8,12 @@ import { MarkerService } from './services/marker.service';
 import { AppComponent } from './app.component';
 import { MapComponent } from './map/map.component';
 import { CheckboxComponent } from './checkbox/checkbox.component';
+import { PopupService } from './services/popup.service';
 
 @NgModule({
   declarations: [AppComponent, MapComponent, CheckboxComponent],
   imports: [BrowserModule, HttpClientModule],
-  providers: [UserCoordinatesGetterService, MarkerService],
+  providers: [UserCoordinatesGetterService, MarkerService, PopupService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

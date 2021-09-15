@@ -44,7 +44,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.mapComponent.initMap();
-    this.mapComponent.enableMarkers();
 
     this.cdr.detectChanges();
     this.changeMapHeight(window.innerHeight);
@@ -54,5 +53,10 @@ export class AppComponent implements OnInit, AfterViewInit {
   changeMapHeight(windowHeight: number) {
     this.mapHeight =
       windowHeight - this.topSectionElement.nativeElement.offsetHeight;
+  }
+
+  showSample(event: any): void {
+    // add loading
+    this.mapComponent.enableMarkers(event.target.checked);
   }
 }

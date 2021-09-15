@@ -9,7 +9,9 @@
   >
     <div class="mapoverlay-title">Options</div>
     <hr />
-    <app-checkbox id="show_samples">Show Samples</app-checkbox>
+    <app-checkbox id="show_samples" (change)="showSample($event)"
+      >Show Samples</app-checkbox
+    >
     <app-checkbox id="show_kmean">Show K-Mean</app-checkbox>
     <app-checkbox id="show_heatmap">Show Heatmap</app-checkbox>
   </app-map>
