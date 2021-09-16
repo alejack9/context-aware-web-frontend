@@ -6,6 +6,9 @@ import {
   Renderer2,
 } from '@angular/core';
 import { LatLng, map, Map, tileLayer } from 'leaflet';
+import { heatLayer } from '../utils/leaflet-heatmap-exporter';
+import { NoisesGetterService } from '../services/noises-getter.service';
+import { Sample } from '../utils/sample';
 
 @Component({
   selector: 'app-map',
@@ -49,7 +52,43 @@ export class MapComponent {
     );
 
     tiles.addTo(this.map);
+    this.initLayers();
   }
 
-  constructor(private renderer: Renderer2) {}
+  initLayers() {
+    // add marker layer request listeners
+    this.map.on('movestart', () => {});
+
+    this.map.on('moveend', () => {
+      this.showHeatMap();
+    });
+  }
+
+  constructor(
+    private renderer: Renderer2,
+    private readonly noisesService: NoisesGetterService
+  ) {}
+
+  async showHeatMap() {
+    let allNoises = (await this.noisesService.getAllNoises(
+      this.map.getBounds().getSouthWest(),
+      this.map.getBounds().getNorthEast()
+    )) as Sample[];
+
+    let coordinates: [LatLng] = [new LatLng(0, 0, 0)];
+    allNoises.map((n) => {
+      coordinates.pop();
+      coordinates.push(
+        new LatLng(
+          n.location.coordinates[1],
+          n.location.coordinates[0],
+          n.noise
+        )
+      );
+    });
+
+    const heat = heatLayer(coordinates, { radius: 50, maxZoom: 7 });
+    heat.setOptions({ minOpacity: 0.1 });
+    heat.addTo(this.map);
+  }
 }
