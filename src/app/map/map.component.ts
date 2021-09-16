@@ -5,7 +5,7 @@ import {
   ElementRef,
   Renderer2,
 } from '@angular/core';
-import { LatLng, map, Map, tileLayer } from 'leaflet';
+import { LatLng, LayerGroup, map, Map, tileLayer } from 'leaflet';
 import { MarkerService } from '../services/marker.service';
 
 @Component({
@@ -20,6 +20,8 @@ export class MapComponent {
     }
   }
   private map: Map;
+
+  private samplesMarkerLayer: LayerGroup;
 
   @ViewChild('map') mapElement: ElementRef;
   @Input('map-height') set mapHeight(value: number) {
@@ -58,8 +60,36 @@ export class MapComponent {
     private markerService: MarkerService
   ) {}
 
-  enableMarkers(toEnable = true): void {
-    if (toEnable) this.markerService.makeSamplesMarkers(this.map);
-    else this.markerService.removeMarkers(this.map);
+  enableSamplesMarkers(toEnable = true): void {
+    if (toEnable)
+      this.map.on('moveend', () => {
+        let bounds = this.map.getBounds();
+        this.markerService
+          //                       min                       max
+          .getSamplesInArea(bounds.getSouthWest(), bounds.getNorthEast())
+          .subscribe((res) => {
+            this.samplesMarkerLayer = this.markerService.createMarkerLayer(
+              this.map,
+              res
+            );
+            this.map.addLayer(this.samplesMarkerLayer);
+          });
+      });
+    else
+      this.map.off(
+        'moveend' // name of the fun
+      );
+
+    // if (toEnable) {
+    //   if (this.samplesMarkerLayer == undefined) {
+    //     this.markerService.getSamples().subscribe((res) => {
+    //       this.samplesMarkerLayer = this.markerService.createMarkerLayer(
+    //         this.map,
+    //         res
+    //       );
+    //       this.map.addLayer(this.samplesMarkerLayer);
+    //     });
+    //   } else this.map.addLayer(this.samplesMarkerLayer);
+    // } else this.map.removeLayer(this.samplesMarkerLayer);
   }
 }

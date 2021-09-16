@@ -56,7 +56,6 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   showSample(event: any): void {
-    // add loading
-    this.mapComponent.enableMarkers(event.target.checked);
+    this.mapComponent.enableSamplesMarkers(event.target.checked);
   }
 }
