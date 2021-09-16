@@ -58,4 +58,8 @@ export class AppComponent implements OnInit, AfterViewInit {
   showSample(event: any): void {
     this.mapComponent.enableSamplesMarkers(event.target.checked);
   }
+
+  showKmeans(event: any): void {
+    this.mapComponent.enableKmeansClustering(event.target.checked);
+  }
 }

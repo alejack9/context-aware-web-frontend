@@ -1,35 +1,18 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { environment } from 'src/environments/environment';
 
-import { CircleMarker, circleMarker, LatLng, LayerGroup, Map } from 'leaflet';
+import { CircleMarker, circleMarker, LayerGroup } from 'leaflet';
 import { PopupService } from './popup.service';
-import { Sample } from '../intefaces/sample.interface';
-import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MarkerService {
-  constructor(private http: HttpClient, private popupService: PopupService) {}
+  constructor(private popupService: PopupService) {}
 
-  getSamplesInArea(southWest: LatLng, northEast: LatLng): Observable<[Sample]> {
-    let params = new HttpParams()
-      .set('swLong', southWest.lng)
-      .set('swLat', southWest.lat)
-      .set('neLong', northEast.lng)
-      .set('neLat', northEast.lat);
-
-    return this.http.get<[Sample]>(
-      environment.apiUrl + 'locations/samplesInArea',
-      {
-        params: params,
-      }
-    );
-  }
-
-  createMarkerLayer(map: Map, elements: [any]) {
+  createMarkerLayer(elements: [any]): LayerGroup {
     let allMarkers = new Array<CircleMarker>();
     let markersLayer = new LayerGroup();
 

@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
   Input,
@@ -6,6 +7,8 @@ import {
   Renderer2,
 } from '@angular/core';
 import { LatLng, LayerGroup, map, Map, tileLayer } from 'leaflet';
+import { ClusteringService } from '../services/clustering.service';
+import { CommunicationService } from '../services/communication.service';
 import { MarkerService } from '../services/marker.service';
 
 @Component({
@@ -22,8 +25,12 @@ export class MapComponent {
   private map: Map;
 
   private samplesMarkerLayer: LayerGroup;
+  private activeMarker: boolean;
+  private kmeansLayer: LayerGroup;
+  private activeKmeans: boolean;
 
   @ViewChild('map') mapElement: ElementRef;
+
   @Input('map-height') set mapHeight(value: number) {
     if (!this.mapElement) return;
 
@@ -53,43 +60,73 @@ export class MapComponent {
     );
 
     tiles.addTo(this.map);
+
+    this.initLayers();
   }
 
   constructor(
     private renderer: Renderer2,
-    private markerService: MarkerService
+    private communicationService: CommunicationService,
+    private markerService: MarkerService,
+    private clusteringService: ClusteringService
   ) {}
 
   enableSamplesMarkers(toEnable = true): void {
-    if (toEnable)
-      this.map.on('moveend', () => {
-        let bounds = this.map.getBounds();
-        this.markerService
-          //                       min                       max
-          .getSamplesInArea(bounds.getSouthWest(), bounds.getNorthEast())
-          .subscribe((res) => {
-            this.samplesMarkerLayer = this.markerService.createMarkerLayer(
-              this.map,
-              res
-            );
-            this.map.addLayer(this.samplesMarkerLayer);
-          });
-      });
-    else
-      this.map.off(
-        'moveend' // name of the fun
-      );
+    this.activeMarker = toEnable;
 
-    // if (toEnable) {
-    //   if (this.samplesMarkerLayer == undefined) {
-    //     this.markerService.getSamples().subscribe((res) => {
-    //       this.samplesMarkerLayer = this.markerService.createMarkerLayer(
-    //         this.map,
-    //         res
-    //       );
-    //       this.map.addLayer(this.samplesMarkerLayer);
-    //     });
-    //   } else this.map.addLayer(this.samplesMarkerLayer);
-    // } else this.map.removeLayer(this.samplesMarkerLayer);
+    toEnable
+      ? this.getSampleArea()
+      : this.map.removeLayer(this.samplesMarkerLayer);
+  }
+
+  enableKmeansClustering(toEnable = true): void {
+    this.activeKmeans = toEnable;
+
+    toEnable ? this.getKmeansArea() : this.map.removeLayer(this.kmeansLayer);
+  }
+
+  async getSampleArea() {
+    let bounds = this.map.getBounds();
+
+    const res = await this.communicationService.getSamplesInArea(
+      bounds.getSouthWest(),
+      bounds.getNorthEast()
+    );
+
+    if (this.samplesMarkerLayer) this.map.removeLayer(this.samplesMarkerLayer); // to avoid the adding of layer on layer
+
+    this.samplesMarkerLayer = this.markerService.createMarkerLayer(res);
+    this.map.addLayer(this.samplesMarkerLayer);
+  }
+
+  async getKmeansArea() {
+    let bounds = this.map.getBounds();
+
+    let res;
+
+    try {
+      res = await this.communicationService.getKmeansInArea(
+        bounds.getSouthWest(),
+        bounds.getNorthEast()
+      );
+    } catch (e: any) {
+      console.warn(e.error.message);
+    }
+
+    if (!res) return;
+
+    if (this.kmeansLayer) this.map.removeLayer(this.kmeansLayer); // to avoid the adding of layer on layer
+
+    this.kmeansLayer = this.clusteringService.createKmeansLayer(res);
+
+    this.map.addLayer(this.kmeansLayer);
+  }
+
+  initLayers() {
+    // add marker layer request listeners
+    this.map.on('moveend', () => {
+      if (this.activeMarker) this.getSampleArea();
+      if (this.activeKmeans) this.getKmeansArea();
+    });
   }
 }
