@@ -1,39 +1,31 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
-import { environment } from 'src/environments/environment';
-
-import { CircleMarker, circleMarker, LayerGroup } from 'leaflet';
-import { PopupService } from './popup.service';
+import { circleMarker, geoJSON, Layer, LayerGroup } from 'leaflet';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MarkerService {
-  constructor(private popupService: PopupService) {}
+  constructor() {}
 
-  createMarkerLayer(elements: [any]): LayerGroup {
-    let allMarkers = new Array<CircleMarker>();
-    let markersLayer = new LayerGroup();
-
-    for (let el of elements) {
-      if (el.location.coordinates) {
-        let lon = el.location.coordinates[0];
-        let lat = el.location.coordinates[1];
-
-        let mark = circleMarker([lat, lon], {
+  createMarkerLayer(featureCollect: any): LayerGroup {
+    let markersLayer = geoJSON(featureCollect, {
+      pointToLayer: function (feat, latlng) {
+        return circleMarker(latlng, {
           radius: 5,
-          // color: '#006600',
         });
-
-        mark.bindPopup(this.popupService.makeSamplePopup(el));
-
-        allMarkers.push(mark);
-      }
-    }
-
-    markersLayer = new LayerGroup(allMarkers);
+      },
+      onEachFeature: this.addPopup,
+    });
 
     return markersLayer;
+  }
+
+  private addPopup(feat: any, layer: Layer) {
+    layer.bindPopup(
+      `<div> Longitude:  ${feat.geometry.coordinates[0]} </div>` +
+        `<div> Latitude: ${feat.geometry.coordinates[1]} </div>` +
+        `<div> Noise: ${feat.properties.noise} </div>`
+    );
   }
 }

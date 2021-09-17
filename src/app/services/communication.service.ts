@@ -2,7 +2,6 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LatLng } from 'leaflet';
 import { environment } from 'src/environments/environment';
-import { Sample } from '../intefaces/sample.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -10,10 +9,7 @@ import { Sample } from '../intefaces/sample.interface';
 export class CommunicationService {
   constructor(private http: HttpClient) {}
 
-  async getSamplesInArea(
-    southWest: LatLng,
-    northEast: LatLng
-  ): Promise<[Sample]> {
+  async getSamplesInArea(southWest: LatLng, northEast: LatLng): Promise<[any]> {
     let header = new HttpHeaders().set('Access-Control-Allow-Origin', '*');
 
     let params = new HttpParams()
@@ -23,14 +19,18 @@ export class CommunicationService {
       .set('neLat', northEast.lat);
 
     return await this.http
-      .get<[Sample]>(environment.apiUrl + 'locations/samplesInArea', {
+      .get<[any]>(environment.apiUrl + 'locations/samplesInArea', {
         headers: header,
         params: params,
       })
       .toPromise();
   }
 
-  async getKmeansInArea(southWest: LatLng, northEast: LatLng): Promise<[any]> {
+  async getKmeansInArea(
+    southWest: LatLng,
+    northEast: LatLng,
+    k = 4
+  ): Promise<[any]> {
     let header = new HttpHeaders().set('Access-Control-Allow-Origin', '*');
 
     let params = new HttpParams()
@@ -38,7 +38,7 @@ export class CommunicationService {
       .set('swLat', southWest.lat)
       .set('neLong', northEast.lng)
       .set('neLat', northEast.lat)
-      .set('k', 4);
+      .set('k', k);
 
     return await this.http
       .get<[any]>(environment.apiUrl + 'locations/kmeansInArea', {
