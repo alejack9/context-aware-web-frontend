@@ -1,4 +1,3 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
   Input,
@@ -10,6 +9,9 @@ import { LatLng, LayerGroup, map, Map, tileLayer } from 'leaflet';
 import { ClusteringService } from '../services/clustering.service';
 import { CommunicationService } from '../services/communication.service';
 import { MarkerService } from '../services/marker.service';
+import { heatLayer } from '../utils/leaflet-heatmap-exporter';
+import { NoisesGetterService } from '../services/noises-getter.service';
+import { Sample } from '../utils/sample';
 
 @Component({
   selector: 'app-map',
@@ -68,6 +70,7 @@ export class MapComponent {
     private renderer: Renderer2,
     private communicationService: CommunicationService,
     private markerService: MarkerService,
+    private readonly noisesService: NoisesGetterService,
     private clusteringService: ClusteringService
   ) {}
 
@@ -127,6 +130,30 @@ export class MapComponent {
     this.map.on('moveend', () => {
       if (this.activeMarker) this.getSampleArea();
       if (this.activeKmeans) this.getKmeansArea();
+      this.showHeatMap();
     });
+  }
+
+  async showHeatMap() {
+    let allNoises = (await this.noisesService.getAllNoises(
+      this.map.getBounds().getSouthWest(),
+      this.map.getBounds().getNorthEast()
+    )) as Sample[];
+
+    let coordinates: [LatLng] = [new LatLng(0, 0, 0)];
+    allNoises.map((n) => {
+      coordinates.pop();
+      coordinates.push(
+        new LatLng(
+          n.location.coordinates[1],
+          n.location.coordinates[0],
+          n.noise
+        )
+      );
+    });
+
+    const heat = heatLayer(coordinates, { radius: 50, maxZoom: 7 });
+    heat.setOptions({ minOpacity: 0.1 });
+    heat.addTo(this.map);
   }
 }
