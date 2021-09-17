@@ -62,4 +62,8 @@ export class AppComponent implements OnInit, AfterViewInit {
   showKmeans(event: any): void {
     this.mapComponent.enableKmeansClustering(event.target.checked);
   }
+
+  showHeatMap(event: any): void {
+    this.mapComponent.enableHeatMap(event.target.checked);
+  }
 }
