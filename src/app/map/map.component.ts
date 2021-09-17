@@ -75,15 +75,11 @@ export class MapComponent {
       this.map.getBounds().getNorthEast()
     )) as Sample[];
 
-    let coordinates: [LatLng] = [new LatLng(0, 0, 0)];
-    allNoises.map((n) => {
-      coordinates.pop();
-      coordinates.push(
-        new LatLng(
-          n.location.coordinates[1],
-          n.location.coordinates[0],
-          n.noise
-        )
+    let coordinates = allNoises.map((n) => {
+      return new LatLng(
+        n.location.coordinates[1],
+        n.location.coordinates[0],
+        n.noise
       );
     });
 
