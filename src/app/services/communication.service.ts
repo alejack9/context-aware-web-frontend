@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { FeatureCollection, Point } from 'geojson';
 import { LatLng } from 'leaflet';
 import { environment } from 'src/environments/environment';
 
@@ -9,7 +10,10 @@ import { environment } from 'src/environments/environment';
 export class CommunicationService {
   constructor(private http: HttpClient) {}
 
-  async getSamplesInArea(southWest: LatLng, northEast: LatLng): Promise<[any]> {
+  async getSamplesInArea(
+    southWest: LatLng,
+    northEast: LatLng
+  ): Promise<FeatureCollection<Point>> {
     let header = new HttpHeaders().set('Access-Control-Allow-Origin', '*');
 
     let params = new HttpParams()
@@ -19,10 +23,13 @@ export class CommunicationService {
       .set('neLat', northEast.lat);
 
     return await this.http
-      .get<[any]>(environment.apiUrl + 'locations/samplesInArea', {
-        headers: header,
-        params: params,
-      })
+      .get<FeatureCollection<Point>>(
+        environment.apiUrl + 'locations/samplesInArea',
+        {
+          headers: header,
+          params: params,
+        }
+      )
       .toPromise();
   }
 

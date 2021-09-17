@@ -28,6 +28,8 @@ export class MapComponent {
   private activeSamples: boolean;
   private kmeansLayer: LayerGroup;
   private activeKmeans: boolean;
+  private activeHeatMap: boolean;
+  private heatMapLayer: Layer;
 
   @ViewChild('map') mapElement: ElementRef;
 
@@ -84,6 +86,12 @@ export class MapComponent {
     else this.map.removeLayer(this.kmeansLayer);
   }
 
+  enableHeatMap(toEnable = true) {
+    this.activeHeatMap = toEnable;
+    if (toEnable) this.showHeatMap();
+    else this.map.removeLayer(this.heatMapLayer);
+  }
+
   async getSampleArea() {
     let bounds = this.map.getBounds();
 
@@ -126,6 +134,7 @@ export class MapComponent {
     this.map.on('moveend', () => {
       if (this.activeSamples) this.getSampleArea();
       if (this.activeKmeans) this.getKmeansArea();
+      if (this.activeHeatMap) this.showHeatMap();
     });
   }
 
@@ -135,11 +144,11 @@ export class MapComponent {
         this.map.getBounds().getSouthWest(),
         this.map.getBounds().getNorthEast()
       )
-    ).map((n) => {
+    ).features.map((n) => {
       return new LatLng(
-        n.location.coordinates[1],
-        n.location.coordinates[0],
-        n.noise
+        n.geometry.coordinates[1],
+        n.geometry.coordinates[0],
+        n.properties?.noise
       );
     });
 
@@ -147,12 +156,14 @@ export class MapComponent {
       .map((c) => c.alt || -Infinity)
       .reduce((a, b) => Math.max(a, b), -Infinity);
 
-    const heat = heatLayer(coordinates, {
+    if (this.heatMapLayer) this.map.removeLayer(this.heatMapLayer);
+
+    this.heatMapLayer = heatLayer(coordinates, {
       radius: 15,
       maxZoom: 7,
       minOpacity: 0.1,
       max: maxNoise,
     });
-    heat.addTo(this.map);
+    this.heatMapLayer.addTo(this.map);
   }
 }
