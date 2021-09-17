@@ -10,7 +10,6 @@ import { ClusteringService } from './services/clustering.service';
 import { AppComponent } from './app.component';
 import { MapComponent } from './map/map.component';
 import { CheckboxComponent } from './checkbox/checkbox.component';
-import { PopupService } from './services/popup.service';
 import { CommunicationService } from './services/communication.service';
 
 @NgModule({
@@ -19,7 +18,6 @@ import { CommunicationService } from './services/communication.service';
   providers: [
     UserCoordinatesGetterService,
     MarkerService,
-    PopupService,
     ClusteringService,
     CommunicationService,
   ],
