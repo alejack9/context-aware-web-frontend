@@ -22,6 +22,12 @@ export class MapComponent {
       this.map.setView(value, 9);
     }
   }
+  k: number;
+  @Input('k') set kss(value: number) {
+    console.log(value);
+    this.k = value;
+  }
+
   private map: Map;
 
   private samplesMarkerLayer: LayerGroup;
@@ -114,7 +120,8 @@ export class MapComponent {
     try {
       res = await this.communicationService.getKmeansInArea(
         bounds.getSouthWest(),
-        bounds.getNorthEast()
+        bounds.getNorthEast(),
+        this.k
       );
     } catch (e: any) {
       console.warn(e.error.message);
@@ -124,7 +131,7 @@ export class MapComponent {
 
     if (this.kmeansLayer) this.map.removeLayer(this.kmeansLayer); // to avoid the adding of layer on layer
 
-    this.kmeansLayer = this.clusteringService.createKmeansLayer(res);
+    this.kmeansLayer = this.clusteringService.createKmeansLayer(res, this.k);
 
     this.map.addLayer(this.kmeansLayer);
   }

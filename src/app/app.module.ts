@@ -12,10 +12,11 @@ import { AppComponent } from './app.component';
 import { MapComponent } from './map/map.component';
 import { CheckboxComponent } from './checkbox/checkbox.component';
 import { CommunicationService } from './services/communication.service';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [AppComponent, MapComponent, CheckboxComponent],
-  imports: [BrowserModule, HttpClientModule],
+  imports: [BrowserModule, HttpClientModule, FormsModule],
   providers: [
     UserCoordinatesGetterService,
     {

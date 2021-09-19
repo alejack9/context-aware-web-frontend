@@ -7,10 +7,10 @@ import { circleMarker, geoJSON, LayerGroup } from 'leaflet';
 export class ClusteringService {
   constructor() {}
 
-  createKmeansLayer(featureCollect: any): LayerGroup {
+  createKmeansLayer(featureCollect: any, k: number): LayerGroup {
     let kmeansLayer = geoJSON(featureCollect, {
       pointToLayer: function (feature, latlng) {
-        let step = 295 / 4;
+        let step = 295 / k;
 
         return circleMarker(latlng, {
           radius: 5,

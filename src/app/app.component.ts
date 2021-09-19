@@ -19,6 +19,8 @@ import {
 export class AppComponent implements OnInit, AfterViewInit {
   userCoordinates: LatLng;
   mapHeight: number;
+  k = 4;
+
   @ViewChild('topSection') topSectionElement: ElementRef;
   @ViewChild('mapComponent') mapComponent: MapComponent;
 

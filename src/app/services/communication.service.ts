@@ -33,7 +33,7 @@ export class CommunicationService {
   async getKmeansInArea(
     southWest: LatLng,
     northEast: LatLng,
-    k = 4
+    k: number
   ): Promise<[any]> {
     let params = new HttpParams()
       .set('swLong', southWest.lng)

@@ -6,6 +6,7 @@
     #mapComponent
     [map-height]="mapHeight"
     [starting-coordinates]="userCoordinates"
+    [k]="k"
   >
     <div class="mapoverlay-title">Options</div>
     <hr />
@@ -15,6 +16,13 @@
     <app-checkbox id="show_kmean" (change)="showKmeans($event)"
       >Show K-Mean</app-checkbox
     >
+    <input
+      type="number"
+      min="2"
+      max="10"
+      style="padding-left: 10px"
+      [(ngModel)]="k"
+    />
     <app-checkbox id="show_heatmap" (change)="showHeatMap($event)"
       >Show Heatmap</app-checkbox
     >
