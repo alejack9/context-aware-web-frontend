@@ -1,3 +1,4 @@
+import { HeatMapService } from './../services/heat-map.service';
 import {
   Component,
   Input,
@@ -11,7 +12,6 @@ import { LatLng, Layer, LayerGroup, map, Map, tileLayer } from 'leaflet';
 import { ClusteringService } from '../services/clustering.service';
 import { CommunicationService } from '../services/communication.service';
 import { MarkerService } from '../services/marker.service';
-import { heatLayer } from '../utils/leaflet-heatmap-exporter';
 
 @Component({
   selector: 'app-map',
@@ -24,20 +24,16 @@ export class MapComponent implements AfterViewInit {
       this.map.setView(value, 9);
     }
   }
-  k: number;
+  private k: number;
   @Input('k') set kss(value: number) {
-    console.log(value);
     this.k = value;
+    if (this.kmeansLayer) this.enableKmeansClustering(true);
   }
-
   private map: Map;
 
-  private samplesMarkerLayer: LayerGroup;
-  private activeSamples: boolean;
-  private kmeansLayer: LayerGroup;
-  private activeKmeans: boolean;
-  private activeHeatMap: boolean;
-  private heatMapLayer: Layer;
+  private samplesMarkerLayer: Layer | null;
+  private kmeansLayer: Layer | null;
+  private heatMapLayer: Layer | null;
 
   @ViewChild('map') mapElement: ElementRef;
 
@@ -84,26 +80,32 @@ export class MapComponent implements AfterViewInit {
     private renderer: Renderer2,
     private communicationService: CommunicationService,
     private markerService: MarkerService,
-    private clusteringService: ClusteringService
+    private clusteringService: ClusteringService,
+    private heatMapService: HeatMapService
   ) {}
 
   enableSamplesMarkers(toEnable = true): void {
-    this.activeSamples = toEnable;
-
     if (toEnable) this.getSampleArea();
-    else this.map.removeLayer(this.samplesMarkerLayer);
+    else if (this.samplesMarkerLayer) {
+      this.map.removeLayer(this.samplesMarkerLayer);
+      this.samplesMarkerLayer = null;
+    }
   }
 
   enableKmeansClustering(toEnable = true): void {
-    this.activeKmeans = toEnable;
     if (toEnable) this.getKmeansArea();
-    else this.map.removeLayer(this.kmeansLayer);
+    else if (this.kmeansLayer) {
+      this.map.removeLayer(this.kmeansLayer);
+      this.kmeansLayer = null;
+    }
   }
 
   enableHeatMap(toEnable = true) {
-    this.activeHeatMap = toEnable;
     if (toEnable) this.showHeatMap();
-    else this.map.removeLayer(this.heatMapLayer);
+    else if (this.heatMapLayer) {
+      this.map.removeLayer(this.heatMapLayer);
+      this.heatMapLayer = null;
+    }
   }
 
   async getSampleArea() {
@@ -114,8 +116,10 @@ export class MapComponent implements AfterViewInit {
       bounds.getNorthEast()
     );
 
-    if (this.samplesMarkerLayer) this.map.removeLayer(this.samplesMarkerLayer); // to avoid the adding of layer on layer
-
+    if (this.samplesMarkerLayer) {
+      this.map.removeLayer(this.samplesMarkerLayer); // to avoid the adding of layer on layer
+      this.samplesMarkerLayer = null;
+    }
     this.samplesMarkerLayer = this.markerService.createMarkerLayer(res);
     this.map.addLayer(this.samplesMarkerLayer);
   }
@@ -137,7 +141,10 @@ export class MapComponent implements AfterViewInit {
 
     if (!res) return;
 
-    if (this.kmeansLayer) this.map.removeLayer(this.kmeansLayer); // to avoid the adding of layer on layer
+    if (this.kmeansLayer) {
+      this.map.removeLayer(this.kmeansLayer); // to avoid the adding of layer on layer
+      this.kmeansLayer = null;
+    }
 
     this.kmeansLayer = this.clusteringService.createKmeansLayer(res, this.k);
 
@@ -147,38 +154,34 @@ export class MapComponent implements AfterViewInit {
   initLayers() {
     // add marker layer request listeners
     this.map.on('moveend', () => {
-      if (this.activeSamples) this.getSampleArea();
-      if (this.activeKmeans) this.getKmeansArea();
-      if (this.activeHeatMap) this.showHeatMap();
+      if (this.samplesMarkerLayer) this.getSampleArea();
+      if (this.kmeansLayer) this.getKmeansArea();
+      if (this.heatMapLayer) this.showHeatMap();
     });
   }
 
   async showHeatMap() {
-    const coordinates = (
-      await this.communicationService.getSamplesInArea(
-        this.map.getBounds().getSouthWest(),
-        this.map.getBounds().getNorthEast()
-      )
-    ).features.map((n) => {
-      return new LatLng(
-        n.geometry.coordinates[1],
-        n.geometry.coordinates[0],
-        n.properties?.noise
+    let bounds = this.map.getBounds();
+
+    let res;
+
+    try {
+      res = await this.communicationService.getSamplesInArea(
+        bounds.getSouthWest(),
+        bounds.getNorthEast()
       );
-    });
+    } catch (e: any) {
+      console.warn(e.error.message);
+    }
 
-    const maxNoise = coordinates
-      .map((c) => c.alt || -Infinity)
-      .reduce((a, b) => Math.max(a, b), -Infinity);
+    if (!res) return;
 
-    if (this.heatMapLayer) this.map.removeLayer(this.heatMapLayer);
+    if (this.heatMapLayer) {
+      this.map.removeLayer(this.heatMapLayer); // to avoid the adding of layer on layer
+      this.heatMapLayer = null;
+    }
+    this.heatMapLayer = this.heatMapService.createHeatMapLayer(res);
 
-    this.heatMapLayer = heatLayer(coordinates, {
-      radius: 15,
-      maxZoom: 7,
-      minOpacity: 0.1,
-      max: maxNoise,
-    });
-    this.heatMapLayer.addTo(this.map);
+    this.map.addLayer(this.heatMapLayer);
   }
 }
