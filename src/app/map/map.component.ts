@@ -4,6 +4,8 @@ import {
   ViewChild,
   ElementRef,
   Renderer2,
+  ChangeDetectorRef,
+  AfterViewInit,
 } from '@angular/core';
 import { LatLng, Layer, LayerGroup, map, Map, tileLayer } from 'leaflet';
 import { ClusteringService } from '../services/clustering.service';
@@ -16,7 +18,7 @@ import { heatLayer } from '../utils/leaflet-heatmap-exporter';
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
 })
-export class MapComponent {
+export class MapComponent implements AfterViewInit {
   @Input('starting-coordinates') set startingCoordinates(value: LatLng) {
     if (this.map) {
       this.map.setView(value, 9);
@@ -51,7 +53,7 @@ export class MapComponent {
     this.map.invalidateSize();
   }
 
-  initMap(): void {
+  private initMap(): void {
     this.map = map('map', {
       center: [0, 0],
       zoom: 9,
@@ -72,7 +74,13 @@ export class MapComponent {
     this.initLayers();
   }
 
+  ngAfterViewInit() {
+    this.initMap();
+    this.cdr.detectChanges();
+  }
+
   constructor(
+    private cdr: ChangeDetectorRef,
     private renderer: Renderer2,
     private communicationService: CommunicationService,
     private markerService: MarkerService,
