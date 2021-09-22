@@ -17,9 +17,10 @@ import {
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, AfterViewInit {
-  userCoordinates: LatLng;
-  mapHeight: number;
-  k = 4;
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private userCoordinatesGetter: UserCoordinatesGetterService
+  ) {}
 
   @ViewChild('topSection') topSectionElement: ElementRef;
   @ViewChild('mapComponent') mapComponent: MapComponent;
@@ -28,12 +29,12 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.changeMapHeight(event.target.innerHeight);
   }
 
-  constructor(
-    private cdr: ChangeDetectorRef,
-    private userCoordinatesGetter: UserCoordinatesGetterService
-  ) {}
+  ngAfterViewInit() {
+    this.changeMapHeight(window.innerHeight);
+    this.cdr.detectChanges();
+  }
 
-  async ngOnInit(): Promise<void> {
+  async ngOnInit() {
     const defaultCoordinates = new LatLng(43.090911, 13.428028);
     try {
       this.userCoordinates =
@@ -44,25 +45,26 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ngAfterViewInit() {
-    this.changeMapHeight(window.innerHeight);
-    this.cdr.detectChanges();
-  }
+  userCoordinates: LatLng;
+  mapHeight: number;
+  k = 4;
 
   changeMapHeight(windowHeight: number) {
     this.mapHeight =
       windowHeight - this.topSectionElement.nativeElement.offsetHeight;
   }
 
-  showSample(event: any): void {
-    this.mapComponent.enableSamplesMarkers(event.target.checked);
-  }
-
-  showKmeans(event: any): void {
-    this.mapComponent.enableKmeansClustering(event.target.checked);
-  }
-
-  showHeatMap(event: any): void {
-    this.mapComponent.enableHeatMap(event.target.checked);
+  showLayer(event: any): void {
+    switch (event.target.id) {
+      case 'show_samples':
+        this.mapComponent.enableSamplesMarkers(event.target.checked);
+        break;
+      case 'show_kmean':
+        this.mapComponent.enableKmeansClustering(event.target.checked);
+        break;
+      case 'show_heatmap':
+        this.mapComponent.enableHeatMap(event.target.checked);
+        break;
+    }
   }
 }

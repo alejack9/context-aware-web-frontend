@@ -10,20 +10,14 @@
   >
     <div class="mapoverlay-title">Options</div>
     <hr />
-    <app-checkbox id="show_samples" (change)="showSample($event)"
+    <app-checkbox id="show_samples" (change)="showLayer($event)"
       >Show Samples</app-checkbox
     >
-    <app-checkbox id="show_kmean" (change)="showKmeans($event)"
+    <app-checkbox id="show_kmean" (change)="showLayer($event)"
       >Show K-Mean</app-checkbox
     >
-    <input
-      type="number"
-      min="2"
-      max="10"
-      style="padding-left: 10px"
-      [(ngModel)]="k"
-    />
-    <app-checkbox id="show_heatmap" (change)="showHeatMap($event)"
+    <input type="number" min="2" max="10" class="k-input" [(ngModel)]="k" />
+    <app-checkbox id="show_heatmap" (change)="showLayer($event)"
       >Show Heatmap</app-checkbox
     >
   </app-map>

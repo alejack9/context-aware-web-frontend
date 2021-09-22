@@ -34,7 +34,7 @@ export class CommunicationService {
     southWest: LatLng,
     northEast: LatLng,
     k: number
-  ): Promise<[any]> {
+  ): Promise<FeatureCollection<Point>> {
     let params = new HttpParams()
       .set('swLong', southWest.lng)
       .set('swLat', southWest.lat)
@@ -43,9 +43,12 @@ export class CommunicationService {
       .set('k', k);
 
     return await this.http
-      .get<[any]>(environment.apiUrl + 'locations/kmeansInArea', {
-        params: params,
-      })
+      .get<FeatureCollection<Point>>(
+        environment.apiUrl + 'locations/kmeansInArea',
+        {
+          params: params,
+        }
+      )
       .toPromise();
   }
 }
