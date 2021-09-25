@@ -22,10 +22,16 @@ export class MarkerService {
   }
 
   private addPopup(feat: any, layer: Layer) {
+    let date = new Date(feat.properties.timestamp);
+    let minutes = date.getMinutes();
+
     layer.bindPopup(
-      `<div> Longitude:  ${feat.geometry.coordinates[0]} </div>` +
-        `<div> Latitude: ${feat.geometry.coordinates[1]} </div>` +
-        `<div> Noise: ${feat.properties.noise} </div>`
+      `<div> <b> Longitude </b>:  ${feat.geometry.coordinates[0]} </div>` +
+        `<div> <b> Latitude </b>: ${feat.geometry.coordinates[1]} </div>` +
+        `<div> <b> Noise </b>: ${feat.properties.noise} </div>` +
+        `<div> <b> Timestamp </b>:  ${date.toDateString()} ${
+          date.getHours() - date.getTimezoneOffset() / 60
+        }:${minutes < 10 ? '0' + minutes : minutes} </div>`
     );
   }
 }
