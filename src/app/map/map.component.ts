@@ -9,12 +9,19 @@ import {
   ChangeDetectorRef,
   AfterViewInit,
 } from '@angular/core';
-import { LatLng, Layer, map, Map as LeafletMap, tileLayer } from 'leaflet';
+import {
+  LatLng,
+  Layer,
+  map,
+  Map as LeafletMap,
+  tileLayer,
+  LatLngBounds,
+} from 'leaflet';
 import { ClusteringService } from '../services/clustering.service';
 import { CommunicationService } from '../services/communication.service';
 import { MarkerService } from '../services/marker.service';
 
-type LayersName = 'kmean' | 'samples' | 'heatmap';
+type LayerName = 'kmean' | 'samples' | 'heatmap';
 
 @Component({
   selector: 'app-map',
@@ -38,6 +45,7 @@ export class MapComponent implements AfterViewInit {
 
   @Input('starting-coordinates') set startingCoordinates(value: LatLng) {
     this.map?.setView(value, 9);
+    this.maxArea = this.map?.getBounds() || new LatLngBounds([0, 0], [0, 0]);
   }
 
   @Input('k') set setKAndRefresh(value: number) {
@@ -57,17 +65,22 @@ export class MapComponent implements AfterViewInit {
     this.map.invalidateSize();
   }
 
+  @Input('dummyUpdates') dummyUpdates: boolean = true;
+  @Input('gpsPerturbated') gpsPerturbated: boolean = true;
+
   @ViewChild('map') mapElement: ElementRef;
 
   private k: number;
   private map: LeafletMap;
+  private minZoom = 9;
+  private maxArea: LatLngBounds = new LatLngBounds([0, 0], [0, 0]);
 
-  private layers = new Map<LayersName, Layer>();
+  private layers = new Map<LayerName, Layer>();
 
   private initMap(): void {
     this.map = map('map', {
       center: [0, 0],
-      zoom: 9,
+      zoom: this.minZoom,
     });
 
     const tiles = tileLayer(
@@ -85,17 +98,30 @@ export class MapComponent implements AfterViewInit {
     this.initLayers();
   }
 
+  private async refreshLayers() {
+    let samples;
+    if (this.layers.has('samples')) {
+      samples = await this.getRes('samples');
+      this.showLayer('samples', samples);
+    }
+    if (this.layers.has('kmean')) this.showLayer('kmean');
+    if (this.layers.has('heatmap')) {
+      this.showLayer('heatmap', samples);
+    }
+  }
+
   private initLayers() {
     // add marker layer request listeners
-    this.map.on('moveend', () => {
-      if (this.layers.has('samples')) this.showLayer('samples');
-      if (this.layers.has('kmean')) this.showLayer('kmean');
-      if (this.layers.has('heatmap')) this.showLayer('heatmap');
+    this.map.on('moveend', async (event) => {
+      if (this.maxArea.contains(event.target.getBounds())) return;
+      this.maxArea = event.target.getBounds();
+
+      this.refreshLayers();
     });
   }
 
-  enableLayer(toEnable: boolean, layer: LayersName) {
-    if (toEnable) this.showLayer(layer);
+  async enableLayer(toEnable: boolean, layer: LayerName) {
+    if (toEnable) await this.showLayer(layer);
     else if (this.layers.has(layer)) {
       this.map.removeLayer(this.layers.get(layer) as Layer);
       this.layers.delete(layer);
@@ -114,13 +140,28 @@ export class MapComponent implements AfterViewInit {
     this.enableLayer(toEnable, 'heatmap');
   }
 
-  private async showLayer(layerName: LayersName) {
+  setDummy(e: boolean) {
+    this.dummyUpdates = e;
+    this.refreshLayers();
+  }
+  setGpsPerturbated(e: boolean) {
+    this.gpsPerturbated = e;
+    this.refreshLayers();
+  }
+
+  private async showLayer(
+    layerName: LayerName,
+    samples?: FeatureCollection<Point, GeoJsonProperties>
+  ) {
     let res;
 
-    try {
-      res = await this.getRes(layerName);
-    } catch (e: any) {
-      console.warn(e.error.message);
+    if (samples !== undefined) res = samples;
+    else {
+      try {
+        res = await this.getRes(layerName);
+      } catch (e: any) {
+        console.warn(e.error.message);
+      }
     }
 
     if (!res) return;
@@ -134,9 +175,11 @@ export class MapComponent implements AfterViewInit {
     this.layers.set(layerName, layer);
 
     this.map.addLayer(layer);
+
+    return res;
   }
 
-  createLayer(res: FeatureCollection<Point>, layerName: LayersName): Layer {
+  createLayer(res: FeatureCollection<Point>, layerName: LayerName): Layer {
     switch (layerName) {
       case 'heatmap':
         return this.heatMapService.createHeatMapLayer(res);
@@ -147,18 +190,22 @@ export class MapComponent implements AfterViewInit {
     }
   }
 
-  async getRes(layerName: LayersName): Promise<FeatureCollection<Point>> {
+  async getRes(layerName: LayerName): Promise<FeatureCollection<Point>> {
     switch (layerName) {
       case 'heatmap':
       case 'samples':
         return await this.communicationService.getSamplesInArea(
           this.map.getBounds().getSouthWest(),
-          this.map.getBounds().getNorthEast()
+          this.map.getBounds().getNorthEast(),
+          this.dummyUpdates,
+          this.gpsPerturbated
         );
       case 'kmean':
         return await this.communicationService.getKmeansInArea(
           this.map.getBounds().getSouthWest(),
           this.map.getBounds().getNorthEast(),
+          this.dummyUpdates,
+          this.gpsPerturbated,
           this.k
         );
     }

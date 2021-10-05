@@ -48,13 +48,15 @@ export class AppComponent implements OnInit, AfterViewInit {
   userCoordinates: LatLng;
   mapHeight: number;
   k = 4;
+  dummyUpdates = true;
+  gpsPerturbated = true;
 
   changeMapHeight(windowHeight: number) {
     this.mapHeight =
       windowHeight - this.topSectionElement.nativeElement.offsetHeight;
   }
 
-  showLayer(event: any): void {
+  showLayer(event: any) {
     switch (event.target.id) {
       case 'show_samples':
         this.mapComponent.enableSamplesMarkers(event.target.checked);
@@ -66,5 +68,12 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.mapComponent.enableHeatMap(event.target.checked);
         break;
     }
+  }
+
+  setDummy(e: any) {
+    this.mapComponent.setDummy(e.target.checked);
+  }
+  setGpsPerturbated(e: any) {
+    this.mapComponent.setGpsPerturbated(e.target.checked);
   }
 }

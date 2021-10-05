@@ -10,15 +10,37 @@
   >
     <div class="mapoverlay-title">Options</div>
     <hr />
-    <app-checkbox id="show_samples" (change)="showLayer($event)"
-      >Show Samples</app-checkbox
-    >
-    <app-checkbox id="show_kmean" (change)="showLayer($event)"
-      >Show K-Mean</app-checkbox
-    >
-    <input type="number" min="2" max="10" class="k-input" [(ngModel)]="k" />
-    <app-checkbox id="show_heatmap" (change)="showLayer($event)"
-      >Show Heatmap</app-checkbox
+    <span>
+      <app-checkbox id="dummy" [enabled]="true" (change)="this.setDummy($event)"
+        >Dummy Updates</app-checkbox
+      >
+      <app-checkbox
+        id="perturb"
+        [enabled]="true"
+        (change)="this.setGpsPerturbated($event)"
+        >Gps Perturabated</app-checkbox
+      >
+    </span>
+    <hr />
+    <span
+      ><app-checkbox id="show_samples" (change)="showLayer($event)"
+        >Show Samples</app-checkbox
+      >
+    </span>
+    <span
+      ><app-checkbox id="show_kmean" (change)="showLayer($event)"
+        >Show K-Mean</app-checkbox
+      ><input
+        type="number"
+        min="2"
+        max="10"
+        class="k-input"
+        [(ngModel)]="k" /></span
+    ><br />
+    <span
+      ><app-checkbox id="show_heatmap" (change)="showLayer($event)"
+        >Show Heatmap</app-checkbox
+      ></span
     >
   </app-map>
 </div>

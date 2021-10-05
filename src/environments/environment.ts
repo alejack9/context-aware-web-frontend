@@ -5,6 +5,7 @@
 export const environment = {
   production: false,
   apiUrl: 'https://context-aware-backend.herokuapp.com/',
+  // apiUrl: 'http://localhost:3000/',
 };
 
 /*

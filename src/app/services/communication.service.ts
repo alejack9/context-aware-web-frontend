@@ -12,13 +12,17 @@ export class CommunicationService {
 
   async getSamplesInArea(
     southWest: LatLng,
-    northEast: LatLng
+    northEast: LatLng,
+    dummyUpdates: boolean,
+    gpsPerturbated: boolean
   ): Promise<FeatureCollection<Point>> {
     let params = new HttpParams()
       .set('swLong', southWest.lng)
       .set('swLat', southWest.lat)
       .set('neLong', northEast.lng)
-      .set('neLat', northEast.lat);
+      .set('neLat', northEast.lat)
+      .set('dummyUpdates', dummyUpdates)
+      .set('gpsPerturbated', gpsPerturbated);
 
     return await this.http
       .get<FeatureCollection<Point>>(
@@ -33,6 +37,8 @@ export class CommunicationService {
   async getKmeansInArea(
     southWest: LatLng,
     northEast: LatLng,
+    dummyUpdates: boolean,
+    gpsPerturbated: boolean,
     k: number
   ): Promise<FeatureCollection<Point>> {
     let params = new HttpParams()
@@ -40,6 +46,8 @@ export class CommunicationService {
       .set('swLat', southWest.lat)
       .set('neLong', northEast.lng)
       .set('neLat', northEast.lat)
+      .set('dummyUpdates', dummyUpdates)
+      .set('gpsPerturbated', gpsPerturbated)
       .set('k', k);
 
     return await this.http
