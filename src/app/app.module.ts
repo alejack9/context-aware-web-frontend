@@ -13,10 +13,16 @@ import { MapComponent } from './map/map.component';
 import { CheckboxComponent } from './checkbox/checkbox.component';
 import { CommunicationService } from './services/communication.service';
 import { FormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [AppComponent, MapComponent, CheckboxComponent],
-  imports: [BrowserModule, HttpClientModule, FormsModule],
+  imports: [
+    BrowserModule,
+    HttpClientModule,
+    FormsModule,
+    BrowserAnimationsModule,
+  ],
   providers: [
     UserCoordinatesGetterService,
     {

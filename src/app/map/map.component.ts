@@ -77,10 +77,13 @@ export class MapComponent implements AfterViewInit {
 
   private layers = new Map<LayerName, Layer>();
 
+  doneLoadingMoveEnd = true;
+
   private initMap(): void {
     this.map = map('map', {
       center: [0, 0],
       zoom: this.minZoom,
+      preferCanvas: true,
     });
 
     const tiles = tileLayer(
@@ -98,13 +101,17 @@ export class MapComponent implements AfterViewInit {
     this.initLayers();
   }
 
-  private async refreshLayers() {
+  private async refreshKMean() {
+    if (this.layers.has('kmean')) this.showLayer('kmean');
+  }
+
+  private async refreshLayers(refreshKMean = true) {
     let samples;
     if (this.layers.has('samples')) {
       samples = await this.getRes('samples');
       this.showLayer('samples', samples);
     }
-    if (this.layers.has('kmean')) this.showLayer('kmean');
+    if (refreshKMean) this.refreshKMean();
     if (this.layers.has('heatmap')) {
       this.showLayer('heatmap', samples);
     }
@@ -113,10 +120,19 @@ export class MapComponent implements AfterViewInit {
   private initLayers() {
     // add marker layer request listeners
     this.map.on('moveend', async (event) => {
-      if (this.maxArea.contains(event.target.getBounds())) return;
-      this.maxArea = event.target.getBounds();
+      this.doneLoadingMoveEnd = false;
 
-      this.refreshLayers();
+      await Promise.all([
+        this.refreshKMean(),
+        (async () => {
+          if (!this.maxArea.contains(event.target.getBounds())) {
+            this.maxArea = event.target.getBounds();
+            await this.refreshLayers(false);
+          }
+        })(),
+      ]);
+
+      this.doneLoadingMoveEnd = true;
     });
   }
 
@@ -128,25 +144,25 @@ export class MapComponent implements AfterViewInit {
     }
   }
 
-  enableSamplesMarkers(toEnable: boolean) {
-    this.enableLayer(toEnable, 'samples');
+  async enableSamplesMarkers(toEnable: boolean) {
+    await this.enableLayer(toEnable, 'samples');
   }
 
-  enableKmeansClustering(toEnable: boolean) {
-    this.enableLayer(toEnable, 'kmean');
+  async enableKmeansClustering(toEnable: boolean) {
+    await this.enableLayer(toEnable, 'kmean');
   }
 
-  enableHeatMap(toEnable: boolean) {
-    this.enableLayer(toEnable, 'heatmap');
+  async enableHeatMap(toEnable: boolean) {
+    await this.enableLayer(toEnable, 'heatmap');
   }
 
-  setDummy(e: boolean) {
+  async setDummy(e: boolean) {
     this.dummyUpdates = e;
-    this.refreshLayers();
+    await this.refreshLayers();
   }
-  setGpsPerturbated(e: boolean) {
+  async setGpsPerturbated(e: boolean) {
     this.gpsPerturbated = e;
-    this.refreshLayers();
+    await this.refreshLayers();
   }
 
   private async showLayer(

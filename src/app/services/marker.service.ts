@@ -29,9 +29,14 @@ export class MarkerService {
       `<div> <b> Longitude </b>:  ${feat.geometry.coordinates[0]} </div>` +
         `<div> <b> Latitude </b>: ${feat.geometry.coordinates[1]} </div>` +
         `<div> <b> Noise </b>: ${feat.properties.noise} </div>` +
-        `<div> <b> Timestamp </b>:  ${date.toDateString()} ${
-          date.getHours() - date.getTimezoneOffset() / 60
-        }:${minutes < 10 ? '0' + minutes : minutes} </div>`
+        `<div> <b> Timestamp </b>:  ${date.toLocaleDateString(undefined, {
+          weekday: 'short',
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+        })} </div>`
     );
   }
 }

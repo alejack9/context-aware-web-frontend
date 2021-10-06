@@ -1,3 +1,6 @@
 <div #map id="map">
-  <div class="overlay"><ng-content></ng-content></div>
+  <div class="overlay">
+    <div class="loading" *ngIf="!doneLoadingMoveEnd"></div>
+    <ng-content></ng-content>
+  </div>
 </div>

@@ -10,6 +10,12 @@ import { environment } from 'src/environments/environment';
 export class CommunicationService {
   constructor(private http: HttpClient) {}
 
+  async sendPing() {
+    return await this.http
+      .get(environment.apiUrl + 'ping', { responseType: 'text' })
+      .toPromise();
+  }
+
   async getSamplesInArea(
     southWest: LatLng,
     northEast: LatLng,

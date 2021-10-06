@@ -1,3 +1,7 @@
+<div class="alert" *ngIf="startingService" [@inOutAnimation]>
+  Server is booting...<img src="../assets/server_boot.gif" />
+</div>
+
 <div class="container">
   <section #topSection>
     <h1 class="title">Context Aware Project</h1>
@@ -11,24 +15,45 @@
     <div class="mapoverlay-title">Options</div>
     <hr />
     <span>
+      <img
+        src="../assets/loader.svg"
+        class="loading-img"
+        *ngIf="!setDummyDone"
+      />
       <app-checkbox id="dummy" [enabled]="true" (change)="this.setDummy($event)"
         >Dummy Updates</app-checkbox
       >
+    </span>
+    <span>
+      <img
+        src="../assets/loader.svg"
+        class="loading-img"
+        *ngIf="!setPerturbatedDone"
+      />
       <app-checkbox
         id="perturb"
         [enabled]="true"
         (change)="this.setGpsPerturbated($event)"
-        >Gps Perturabated</app-checkbox
+        >Gps Perturbated</app-checkbox
       >
     </span>
     <hr />
-    <span
-      ><app-checkbox id="show_samples" (change)="showLayer($event)"
+    <span>
+      <img
+        src="../assets/loader.svg"
+        class="loading-img"
+        *ngIf="!showSamplesDone"
+      />
+      <app-checkbox id="show_samples" (change)="showLayer($event)"
         >Show Samples</app-checkbox
       >
     </span>
-    <span
-      ><app-checkbox id="show_kmean" (change)="showLayer($event)"
+    <span>
+      <img
+        src="../assets/loader.svg"
+        class="loading-img"
+        *ngIf="!showKMeanDone" />
+      <app-checkbox id="show_kmean" (change)="showLayer($event)"
         >Show K-Mean</app-checkbox
       ><input
         type="number"
@@ -37,8 +62,13 @@
         class="k-input"
         [(ngModel)]="k" /></span
     ><br />
-    <span
-      ><app-checkbox id="show_heatmap" (change)="showLayer($event)"
+    <span>
+      <img
+        src="../assets/loader.svg"
+        class="loading-img"
+        *ngIf="!setGpsPerturbated"
+      />
+      <app-checkbox id="show_heatmap" (change)="showLayer($event)"
         >Show Heatmap</app-checkbox
       ></span
     >
