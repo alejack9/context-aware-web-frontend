@@ -20,9 +20,35 @@
         class="loading-img"
         *ngIf="!setDummyDone"
       />
-      <app-checkbox id="dummy" [enabled]="true" (change)="this.setDummy($event)"
+      <app-checkbox
+        id="dummy"
+        [checked]="dummyUpdates"
+        (change)="setDummy($event)"
         >Dummy Updates</app-checkbox
       >
+      <div *ngIf="dummyUpdates">
+        <label for="minRadius">Min radius:</label>
+        <select
+          name="minRadius"
+          id="minRadius"
+          [(ngModel)]="dummyUpdatesMinRadius"
+        >
+          <option *ngFor="let value of minRadiusValues" [value]="value">
+            {{ value }}
+          </option>
+        </select>
+
+        <label for="maxRadius">Max radius:</label>
+        <select
+          name="maxRadius"
+          id="maxRadius"
+          [(ngModel)]="dummyUpdatesMaxRadius"
+        >
+          <option *ngFor="let value of maxRadiusValues" [value]="value">
+            {{ value }}
+          </option>
+        </select>
+      </div>
     </span>
     <span>
       <img
@@ -32,10 +58,25 @@
       />
       <app-checkbox
         id="perturb"
-        [enabled]="true"
+        [checked]="true"
         (change)="this.setGpsPerturbated($event)"
         >Gps Perturbated</app-checkbox
       >
+      <div *ngIf="gpsPerturbated">
+        <label for="perturbatorDecimals">Decimals:</label>
+        <select
+          name="perturbatorDecimals"
+          id="perturbatorDecimals"
+          [(ngModel)]="perturbatorDecimals"
+        >
+          <option
+            *ngFor="let value of perturbatorDecimalsValues"
+            [value]="value"
+          >
+            {{ value }}
+          </option>
+        </select>
+      </div>
     </span>
     <hr />
     <span>

@@ -75,13 +75,28 @@ export class AppComponent implements OnInit, AfterViewInit {
   userCoordinates: LatLng;
   mapHeight: number;
   k = 4;
+
+  minRadiusValues = [0.0003, 0.0004, 0.0005, 0.0006, 0.0007];
+  maxRadiusValues = [0.002, 0.003, 0.004, 0.005, 0.006];
+  perturbatorDecimalsValues = [1, 2, 3, 4, 5];
+
+  dummyUpdatesMinRadius = this.minRadiusValues[0];
+  dummyUpdatesMaxRadius = this.maxRadiusValues[0];
+  perturbatorDecimals = this.perturbatorDecimalsValues[0];
+
   dummyUpdates = true;
   gpsPerturbated = true;
+
   startingService: boolean;
 
   changeMapHeight(windowHeight: number) {
     this.mapHeight =
       windowHeight - this.topSectionElement.nativeElement.offsetHeight;
+  }
+
+  isActive() {
+    console.log(this.dummyUpdates);
+    return this.dummyUpdates;
   }
 
   async showLayer(event: any) {
@@ -105,11 +120,16 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   async setDummy(e: any) {
+    this.dummyUpdates = !this.dummyUpdates;
+
     this.setDummyDone = false;
     await this.mapComponent.setDummy(e.target.checked);
     this.setDummyDone = true;
   }
+
   async setGpsPerturbated(e: any) {
+    this.gpsPerturbated = !this.gpsPerturbated;
+
     this.setPerturbatedDone = false;
     await this.mapComponent.setGpsPerturbated(e.target.checked);
     this.setPerturbatedDone = true;
