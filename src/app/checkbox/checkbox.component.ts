@@ -7,7 +7,6 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 })
 export class CheckboxComponent {
   @Input('id') id: string;
-  @Input('enabled') enabled = false;
-
+  @Input('checked') checked = false;
   constructor() {}
 }
