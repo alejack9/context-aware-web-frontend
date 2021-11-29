@@ -84,8 +84,8 @@ export class AppComponent implements OnInit, AfterViewInit {
   dummyUpdatesMaxRadius = this.maxRadiusValues[0];
   perturbatorDecimals = this.perturbatorDecimalsValues[0];
 
-  dummyUpdates = true;
-  gpsPerturbated = true;
+  dummyUpdates = false;
+  gpsPerturbated = false;
 
   startingService: boolean;
 
@@ -106,11 +106,13 @@ export class AppComponent implements OnInit, AfterViewInit {
         await this.mapComponent.enableSamplesMarkers(event.target.checked);
         this.showSamplesDone = true;
         break;
+
       case 'show_kmean':
         this.showKMeanDone = false;
         await this.mapComponent.enableKmeansClustering(event.target.checked);
         this.showKMeanDone = true;
         break;
+
       case 'show_heatmap':
         this.showHeatmapDone = false;
         await this.mapComponent.enableHeatMap(event.target.checked);
@@ -123,15 +125,15 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.dummyUpdates = !this.dummyUpdates;
 
     this.setDummyDone = false;
-    await this.mapComponent.setDummy(e.target.checked);
+    await this.mapComponent.setGpsOrDummy();
     this.setDummyDone = true;
   }
 
   async setGpsPerturbated(e: any) {
     this.gpsPerturbated = !this.gpsPerturbated;
-
     this.setPerturbatedDone = false;
-    await this.mapComponent.setGpsPerturbated(e.target.checked);
+
+    await this.mapComponent.setGpsOrDummy();
     this.setPerturbatedDone = true;
   }
 }

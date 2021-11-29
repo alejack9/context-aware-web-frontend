@@ -1,3 +1,8 @@
+label {
+  margin-left: 10px;
+  font-size: small;
+}
+
 .container {
   position: fixed;
 
@@ -16,10 +21,6 @@
   text-align: center;
   font-size: larger;
   font-weight: bolder;
-}
-
-.k-input {
-  margin-left: 10px;
 }
 
 .loading-img {

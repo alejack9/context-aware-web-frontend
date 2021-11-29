@@ -68,6 +68,10 @@ export class MapComponent implements AfterViewInit {
   @Input('dummyUpdates') dummyUpdates: boolean = true;
   @Input('gpsPerturbated') gpsPerturbated: boolean = true;
 
+  @Input('dummyUpdatesMinRadius') dummyUpdatesMinRadius: number;
+  @Input('dummyUpdatesMaxRadius') dummyUpdatesMaxRadius: number;
+  @Input('gpsPerturbatedDecimals') gpsPerturbatedDecimals: number;
+
   @ViewChild('map') mapElement: ElementRef;
 
   private k: number;
@@ -107,11 +111,13 @@ export class MapComponent implements AfterViewInit {
 
   private async refreshLayers(refreshKMean = true) {
     let samples;
+
     if (this.layers.has('samples')) {
       samples = await this.getRes('samples');
       this.showLayer('samples', samples);
     }
     if (refreshKMean) this.refreshKMean();
+
     if (this.layers.has('heatmap')) {
       this.showLayer('heatmap', samples);
     }
@@ -156,12 +162,7 @@ export class MapComponent implements AfterViewInit {
     await this.enableLayer(toEnable, 'heatmap');
   }
 
-  async setDummy(e: boolean) {
-    this.dummyUpdates = e;
-    await this.refreshLayers();
-  }
-  async setGpsPerturbated(e: boolean) {
-    this.gpsPerturbated = e;
+  async setGpsOrDummy() {
     await this.refreshLayers();
   }
 
@@ -214,7 +215,10 @@ export class MapComponent implements AfterViewInit {
           this.map.getBounds().getSouthWest(),
           this.map.getBounds().getNorthEast(),
           this.dummyUpdates,
-          this.gpsPerturbated
+          this.gpsPerturbated,
+          this.dummyUpdatesMinRadius,
+          this.dummyUpdatesMaxRadius,
+          this.gpsPerturbatedDecimals
         );
       case 'kmean':
         return await this.communicationService.getKmeansInArea(
@@ -222,6 +226,9 @@ export class MapComponent implements AfterViewInit {
           this.map.getBounds().getNorthEast(),
           this.dummyUpdates,
           this.gpsPerturbated,
+          // this.dummyUpdatesMinRadius,
+          // this.dummyUpdatesMaxRadius,
+          // this.gpsPerturbatedDecimals
           this.k
         );
     }

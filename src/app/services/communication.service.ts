@@ -20,7 +20,10 @@ export class CommunicationService {
     southWest: LatLng,
     northEast: LatLng,
     dummyUpdates: boolean,
-    gpsPerturbated: boolean
+    gpsPerturbated: boolean,
+    dummyUpdatesMinRadius: number,
+    dummyUpdatesMaxRadius: number,
+    gpsPerturbatedDecimals: number
   ): Promise<FeatureCollection<Point>> {
     let params = new HttpParams()
       .set('swLong', southWest.lng)
@@ -28,8 +31,11 @@ export class CommunicationService {
       .set('neLong', northEast.lng)
       .set('neLat', northEast.lat)
       .set('dummyUpdates', dummyUpdates)
-      .set('gpsPerturbated', gpsPerturbated);
-
+      .set('gpsPerturbated', gpsPerturbated)
+      .set('minRadius', dummyUpdatesMinRadius)
+      .set('maxRadius', dummyUpdatesMaxRadius)
+      .set('pertDecimals', gpsPerturbatedDecimals);
+    console.log(params);
     return await this.http
       .get<FeatureCollection<Point>>(
         environment.apiUrl + 'locations/samplesInArea',

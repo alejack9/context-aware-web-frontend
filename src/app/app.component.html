@@ -11,6 +11,11 @@
     [map-height]="mapHeight"
     [starting-coordinates]="userCoordinates"
     [k]="k"
+    [dummyUpdates]="dummyUpdates"
+    [gpsPerturbated]="gpsPerturbated"
+    [dummyUpdatesMinRadius]="dummyUpdatesMinRadius"
+    [dummyUpdatesMaxRadius]="dummyUpdatesMaxRadius"
+    [gpsPerturbatedDecimals]="perturbatorDecimals"
   >
     <div class="mapoverlay-title">Options</div>
     <hr />
@@ -58,7 +63,7 @@
       />
       <app-checkbox
         id="perturb"
-        [checked]="true"
+        [checked]="gpsPerturbated"
         (change)="this.setGpsPerturbated($event)"
         >Gps Perturbated</app-checkbox
       >
@@ -96,7 +101,10 @@
         *ngIf="!showKMeanDone" />
       <app-checkbox id="show_kmean" (change)="showLayer($event)"
         >Show K-Mean</app-checkbox
-      ><input
+      >
+      <label for="k-value"> k: </label>
+      <input
+        name="k-value"
         type="number"
         min="2"
         max="10"
