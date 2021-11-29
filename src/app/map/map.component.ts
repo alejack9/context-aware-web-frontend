@@ -65,13 +65,6 @@ export class MapComponent implements AfterViewInit {
     this.map.invalidateSize();
   }
 
-  @Input('dummyUpdates') dummyUpdates: boolean = true;
-  @Input('gpsPerturbated') gpsPerturbated: boolean = true;
-
-  @Input('dummyUpdatesMinRadius') dummyUpdatesMinRadius: number;
-  @Input('dummyUpdatesMaxRadius') dummyUpdatesMaxRadius: number;
-  @Input('gpsPerturbatedDecimals') gpsPerturbatedDecimals: number;
-
   @ViewChild('map') mapElement: ElementRef;
 
   private k: number;
@@ -80,6 +73,13 @@ export class MapComponent implements AfterViewInit {
   private maxArea: LatLngBounds = new LatLngBounds([0, 0], [0, 0]);
 
   private layers = new Map<LayerName, Layer>();
+
+  private dummyUpdates = false;
+  private gpsPerturbated = false;
+
+  private dummyUpdatesMinRadius: number;
+  private dummyUpdatesMaxRadius: number;
+  private gpsPerturbatedDecimals: number;
 
   doneLoadingMoveEnd = true;
 
@@ -162,7 +162,21 @@ export class MapComponent implements AfterViewInit {
     await this.enableLayer(toEnable, 'heatmap');
   }
 
-  async setGpsOrDummy() {
+  async setDummy(dummyUpdates: boolean, minRadius: number, maxRadius: number) {
+    this.dummyUpdates = dummyUpdates;
+    this.dummyUpdatesMinRadius = minRadius;
+    this.dummyUpdatesMaxRadius = maxRadius;
+
+    await this.refreshLayers();
+  }
+
+  async setGpsPerturbated(
+    gpsPerturbated: boolean,
+    gpsPerturbatedDecimals: number
+  ) {
+    this.dummyUpdates = gpsPerturbated;
+    this.gpsPerturbatedDecimals = gpsPerturbatedDecimals;
+
     await this.refreshLayers();
   }
 

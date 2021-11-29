@@ -11,11 +11,6 @@
     [map-height]="mapHeight"
     [starting-coordinates]="userCoordinates"
     [k]="k"
-    [dummyUpdates]="dummyUpdates"
-    [gpsPerturbated]="gpsPerturbated"
-    [dummyUpdatesMinRadius]="dummyUpdatesMinRadius"
-    [dummyUpdatesMaxRadius]="dummyUpdatesMaxRadius"
-    [gpsPerturbatedDecimals]="perturbatorDecimals"
   >
     <div class="mapoverlay-title">Options</div>
     <hr />
@@ -37,6 +32,7 @@
           name="minRadius"
           id="minRadius"
           [(ngModel)]="dummyUpdatesMinRadius"
+          (change)="setDummyOptions($event)"
         >
           <option *ngFor="let value of minRadiusValues" [value]="value">
             {{ value }}
@@ -48,6 +44,7 @@
           name="maxRadius"
           id="maxRadius"
           [(ngModel)]="dummyUpdatesMaxRadius"
+          (change)="setDummyOptions($event)"
         >
           <option *ngFor="let value of maxRadiusValues" [value]="value">
             {{ value }}
@@ -73,6 +70,7 @@
           name="perturbatorDecimals"
           id="perturbatorDecimals"
           [(ngModel)]="perturbatorDecimals"
+          (change)="setGpsPerturbatedOptions($event)"
         >
           <option
             *ngFor="let value of perturbatorDecimalsValues"

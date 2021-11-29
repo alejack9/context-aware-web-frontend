@@ -120,15 +120,30 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.dummyUpdates = !this.dummyUpdates;
 
     this.setDummyDone = false;
-    await this.mapComponent.setGpsOrDummy();
+    this.setDummyOptions(e);
     this.setDummyDone = true;
+  }
+
+  async setDummyOptions(e: any) {
+    await this.mapComponent.setDummy(
+      this.dummyUpdates,
+      this.dummyUpdatesMinRadius,
+      this.dummyUpdatesMaxRadius
+    );
   }
 
   async setGpsPerturbated(e: any) {
     this.gpsPerturbated = !this.gpsPerturbated;
-    this.setPerturbatedDone = false;
 
-    await this.mapComponent.setGpsOrDummy();
+    this.setPerturbatedDone = false;
+    await this.setGpsPerturbatedOptions(e);
     this.setPerturbatedDone = true;
+  }
+
+  async setGpsPerturbatedOptions(e: any) {
+    await this.mapComponent.setGpsPerturbated(
+      this.gpsPerturbated,
+      this.perturbatorDecimals
+    );
   }
 }
