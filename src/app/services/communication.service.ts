@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FeatureCollection, Point } from 'geojson';
 import { LatLng } from 'leaflet';
@@ -35,7 +35,7 @@ export class CommunicationService {
       .set('minRadius', dummyUpdatesMinRadius)
       .set('maxRadius', dummyUpdatesMaxRadius)
       .set('pertDecimals', gpsPerturbatedDecimals);
-    console.log(params);
+
     return await this.http
       .get<FeatureCollection<Point>>(
         environment.apiUrl + 'locations/samplesInArea',
@@ -51,6 +51,9 @@ export class CommunicationService {
     northEast: LatLng,
     dummyUpdates: boolean,
     gpsPerturbated: boolean,
+    dummyUpdatesMinRadius: number,
+    dummyUpdatesMaxRadius: number,
+    gpsPerturbatedDecimals: number,
     k: number
   ): Promise<FeatureCollection<Point>> {
     let params = new HttpParams()
@@ -60,6 +63,9 @@ export class CommunicationService {
       .set('neLat', northEast.lat)
       .set('dummyUpdates', dummyUpdates)
       .set('gpsPerturbated', gpsPerturbated)
+      .set('minRadius', dummyUpdatesMinRadius)
+      .set('maxRadius', dummyUpdatesMaxRadius)
+      .set('pertDecimals', gpsPerturbatedDecimals)
       .set('k', k);
 
     return await this.http

@@ -226,9 +226,9 @@ export class MapComponent implements AfterViewInit {
           this.map.getBounds().getNorthEast(),
           this.dummyUpdates,
           this.gpsPerturbated,
-          // this.dummyUpdatesMinRadius,
-          // this.dummyUpdatesMaxRadius,
-          // this.gpsPerturbatedDecimals
+          this.dummyUpdatesMinRadius,
+          this.dummyUpdatesMaxRadius,
+          this.gpsPerturbatedDecimals,
           this.k
         );
     }

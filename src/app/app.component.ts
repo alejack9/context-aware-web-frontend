@@ -94,11 +94,6 @@ export class AppComponent implements OnInit, AfterViewInit {
       windowHeight - this.topSectionElement.nativeElement.offsetHeight;
   }
 
-  isActive() {
-    console.log(this.dummyUpdates);
-    return this.dummyUpdates;
-  }
-
   async showLayer(event: any) {
     switch (event.target.id) {
       case 'show_samples':
