@@ -16,6 +16,7 @@ import {
   Map as LeafletMap,
   tileLayer,
   LatLngBounds,
+  CRS,
 } from 'leaflet';
 import { ClusteringService } from '../services/clustering.service';
 import { CommunicationService } from '../services/communication.service';
@@ -88,6 +89,7 @@ export class MapComponent implements AfterViewInit {
       center: [0, 0],
       zoom: this.minZoom,
       preferCanvas: true,
+      crs: CRS.EPSG3857,
     });
 
     const tiles = tileLayer(
@@ -111,6 +113,8 @@ export class MapComponent implements AfterViewInit {
 
   private async refreshLayers(refreshKMean = true) {
     let samples;
+
+    this.maxArea = this.map.getBounds();
 
     if (this.layers.has('samples')) {
       samples = await this.getRes('samples');
@@ -143,8 +147,11 @@ export class MapComponent implements AfterViewInit {
   }
 
   async enableLayer(toEnable: boolean, layer: LayerName) {
-    if (toEnable) await this.showLayer(layer);
-    else if (this.layers.has(layer)) {
+    this.maxArea = this.map.getBounds();
+
+    if (toEnable) {
+      await this.showLayer(layer);
+    } else if (this.layers.has(layer)) {
       this.map.removeLayer(this.layers.get(layer) as Layer);
       this.layers.delete(layer);
     }
@@ -174,7 +181,7 @@ export class MapComponent implements AfterViewInit {
     gpsPerturbated: boolean,
     gpsPerturbatedDecimals: number
   ) {
-    this.dummyUpdates = gpsPerturbated;
+    this.gpsPerturbated = gpsPerturbated;
     this.gpsPerturbatedDecimals = gpsPerturbatedDecimals;
 
     await this.refreshLayers();
