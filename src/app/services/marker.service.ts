@@ -23,7 +23,6 @@ export class MarkerService {
 
   private addPopup(feat: any, layer: Layer) {
     let date = new Date(feat.properties.timestamp);
-    let minutes = date.getMinutes();
 
     layer.bindPopup(
       `<div> <b> Longitude </b>:  ${feat.geometry.coordinates[0]} </div>` +
