@@ -22,7 +22,7 @@ export class CommunicationService {
     dummyUpdates: boolean,
     gpsPerturbated: boolean,
     dummyUpdatesMinRadius: number,
-    dummyUpdatesMaxRadius: number,
+    dummyUpdatesStep: number,
     gpsPerturbatedDecimals: number
   ): Promise<FeatureCollection<Point>> {
     let params = new HttpParams()
@@ -30,19 +30,17 @@ export class CommunicationService {
       .set('swLat', southWest.lat)
       .set('neLong', northEast.lng)
       .set('neLat', northEast.lat)
-      .set('dummyUpdates', dummyUpdates)
+
+      .set('dummyLocation', dummyUpdates)
       .set('gpsPerturbated', gpsPerturbated)
-      .set('minRadius', dummyUpdatesMinRadius)
-      .set('maxRadius', dummyUpdatesMaxRadius)
-      .set('pertDecimals', gpsPerturbatedDecimals);
+      .set('dummyUpdatesRadiusMin', dummyUpdatesMinRadius)
+      .set('dummyUpdatesRadiusStep', dummyUpdatesStep)
+      .set('perturbatorDecimals', gpsPerturbatedDecimals);
 
     return await this.http
-      .get<FeatureCollection<Point>>(
-        environment.apiUrl + 'locations/samplesInArea',
-        {
-          params: params,
-        }
-      )
+      .get<FeatureCollection<Point>>(environment.apiUrl + 'samplesInArea', {
+        params: params,
+      })
       .toPromise();
   }
 
@@ -52,7 +50,7 @@ export class CommunicationService {
     dummyUpdates: boolean,
     gpsPerturbated: boolean,
     dummyUpdatesMinRadius: number,
-    dummyUpdatesMaxRadius: number,
+    dummyUpdatesStep: number,
     gpsPerturbatedDecimals: number,
     k: number
   ): Promise<FeatureCollection<Point>> {
@@ -61,20 +59,17 @@ export class CommunicationService {
       .set('swLat', southWest.lat)
       .set('neLong', northEast.lng)
       .set('neLat', northEast.lat)
-      .set('dummyUpdates', dummyUpdates)
+      .set('dummyLocation', dummyUpdates)
       .set('gpsPerturbated', gpsPerturbated)
-      .set('minRadius', dummyUpdatesMinRadius)
-      .set('maxRadius', dummyUpdatesMaxRadius)
-      .set('pertDecimals', gpsPerturbatedDecimals)
+      .set('dummyUpdatesRadiusMin', dummyUpdatesMinRadius)
+      .set('dummyUpdatesRadiusStep', dummyUpdatesStep)
+      .set('perturbatorDecimals', gpsPerturbatedDecimals)
       .set('k', k);
 
     return await this.http
-      .get<FeatureCollection<Point>>(
-        environment.apiUrl + 'locations/kmeansInArea',
-        {
-          params: params,
-        }
-      )
+      .get<FeatureCollection<Point>>(environment.apiUrl + 'kmeansInArea', {
+        params: params,
+      })
       .toPromise();
   }
 }

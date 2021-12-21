@@ -79,7 +79,7 @@ export class MapComponent implements AfterViewInit {
   private gpsPerturbated = false;
 
   private dummyUpdatesMinRadius: number;
-  private dummyUpdatesMaxRadius: number;
+  private dummyUpdatesStep: number;
   private gpsPerturbatedDecimals: number;
 
   doneLoadingMoveEnd = true;
@@ -169,10 +169,10 @@ export class MapComponent implements AfterViewInit {
     await this.enableLayer(toEnable, 'heatmap');
   }
 
-  async setDummy(dummyUpdates: boolean, minRadius: number, maxRadius: number) {
+  async setDummy(dummyUpdates: boolean, minRadius: number, step: number) {
     this.dummyUpdates = dummyUpdates;
     this.dummyUpdatesMinRadius = minRadius;
-    this.dummyUpdatesMaxRadius = maxRadius;
+    this.dummyUpdatesStep = step;
 
     await this.refreshLayers();
   }
@@ -238,7 +238,7 @@ export class MapComponent implements AfterViewInit {
           this.dummyUpdates,
           this.gpsPerturbated,
           this.dummyUpdatesMinRadius,
-          this.dummyUpdatesMaxRadius,
+          this.dummyUpdatesStep,
           this.gpsPerturbatedDecimals
         );
       case 'kmean':
@@ -248,7 +248,7 @@ export class MapComponent implements AfterViewInit {
           this.dummyUpdates,
           this.gpsPerturbated,
           this.dummyUpdatesMinRadius,
-          this.dummyUpdatesMaxRadius,
+          this.dummyUpdatesStep,
           this.gpsPerturbatedDecimals,
           this.k
         );

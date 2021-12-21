@@ -76,12 +76,12 @@ export class AppComponent implements OnInit, AfterViewInit {
   mapHeight: number;
   k = 4;
 
-  minRadiusValues = [0.0003, 0.0004, 0.0005, 0.0006, 0.0007];
-  maxRadiusValues = [0.002, 0.003, 0.004, 0.005, 0.006];
+  minRadiusValues = [500, 1_000, 1_500, 2_000, 3_000]; //min distance from the real point
+  dummyUpdatesStepValues = [250, 500, 750, 1_000, 2_000];
   perturbatorDecimalsValues = [1, 2, 3, 4, 5];
 
   dummyUpdatesMinRadius = this.minRadiusValues[0];
-  dummyUpdatesMaxRadius = this.maxRadiusValues[0];
+  dummyUpdatesStep = this.dummyUpdatesStepValues[0];
   perturbatorDecimals = this.perturbatorDecimalsValues[0];
 
   dummyUpdates = false;
@@ -128,7 +128,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     await this.mapComponent.setDummy(
       this.dummyUpdates,
       this.dummyUpdatesMinRadius,
-      this.dummyUpdatesMaxRadius
+      this.dummyUpdatesStep
     );
   }
 

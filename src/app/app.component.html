@@ -39,14 +39,14 @@
           </option>
         </select>
 
-        <label for="maxRadius">Max radius:</label>
+        <label for="step">Step:</label>
         <select
-          name="maxRadius"
-          id="maxRadius"
-          [(ngModel)]="dummyUpdatesMaxRadius"
+          name="step"
+          id="step"
+          [(ngModel)]="dummyUpdatesStep"
           (change)="setDummyOptions($event)"
         >
-          <option *ngFor="let value of maxRadiusValues" [value]="value">
+          <option *ngFor="let value of dummyUpdatesStepValues" [value]="value">
             {{ value }}
           </option>
         </select>
