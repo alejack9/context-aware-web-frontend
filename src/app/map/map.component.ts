@@ -134,6 +134,7 @@ export class MapComponent implements AfterViewInit {
 
       await Promise.all([
         this.refreshKMean(),
+
         (async () => {
           if (!this.maxArea.contains(event.target.getBounds())) {
             this.maxArea = event.target.getBounds();

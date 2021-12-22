@@ -82,24 +82,46 @@
       </div>
     </span>
     <hr />
+    <input
+      type="radio"
+      name="samplesOrKmean"
+      id="nothing"
+      value="nothing"
+      (change)="showLayer($event)"
+      checked
+    />
+    <label for="nothing">Nothing</label>
+    <br />
     <span>
       <img
         src="../assets/loader.svg"
         class="loading-img"
         *ngIf="!showSamplesDone"
       />
-      <app-checkbox id="show_samples" (change)="showLayer($event)"
-        >Show Samples</app-checkbox
-      >
+      <input
+        type="radio"
+        name="samplesOrKmean"
+        id="samples"
+        value="samples"
+        (change)="showLayer($event)"
+      />
+      <label for="samples">Show Samples </label>
     </span>
+    <br />
     <span>
       <img
         src="../assets/loader.svg"
         class="loading-img"
         *ngIf="!showKMeanDone" />
-      <app-checkbox id="show_kmean" (change)="showLayer($event)"
-        >Show K-Mean</app-checkbox
-      >
+
+      <input
+        type="radio"
+        name="samplesOrKmean"
+        id="kmean"
+        value="kmean"
+        (change)="showLayer($event)" />
+      <label for="kmean">Show K-mean </label>
+      <br />
       <label for="k-value"> k: </label>
       <input
         name="k-value"
@@ -115,7 +137,7 @@
         class="loading-img"
         *ngIf="!setGpsPerturbated"
       />
-      <app-checkbox id="show_heatmap" (change)="showLayer($event)"
+      <app-checkbox id="show_heatmap" (change)="showHeatmap($event)"
         >Show Heatmap</app-checkbox
       ></span
     >

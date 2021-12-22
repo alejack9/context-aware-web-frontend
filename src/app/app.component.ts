@@ -95,25 +95,36 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   async showLayer(event: any) {
-    switch (event.target.id) {
-      case 'show_samples':
+    switch (event.target.value) {
+      case 'nothing': {
+        await this.mapComponent.enableSamplesMarkers(false);
+        await this.mapComponent.enableKmeansClustering(false);
+
+        break;
+      }
+
+      case 'samples':
+        await this.mapComponent.enableKmeansClustering(false);
+
         this.showSamplesDone = false;
         await this.mapComponent.enableSamplesMarkers(event.target.checked);
         this.showSamplesDone = true;
         break;
 
-      case 'show_kmean':
+      case 'kmean':
+        await this.mapComponent.enableSamplesMarkers(false);
+
         this.showKMeanDone = false;
         await this.mapComponent.enableKmeansClustering(event.target.checked);
         this.showKMeanDone = true;
         break;
-
-      case 'show_heatmap':
-        this.showHeatmapDone = false;
-        await this.mapComponent.enableHeatMap(event.target.checked);
-        this.showHeatmapDone = true;
-        break;
     }
+  }
+
+  async showHeatmap(event: any) {
+    this.showHeatmapDone = false;
+    await this.mapComponent.enableHeatMap(event.target.checked);
+    this.showHeatmapDone = true;
   }
 
   async setDummy(e: any) {
