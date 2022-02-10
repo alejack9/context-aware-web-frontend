@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FeatureCollection, Point } from 'geojson';
 import { LatLng } from 'leaflet';
@@ -20,23 +20,27 @@ export class CommunicationService {
     southWest: LatLng,
     northEast: LatLng,
     dummyUpdates: boolean,
-    gpsPerturbated: boolean
+    gpsPerturbated: boolean,
+    dummyUpdatesMinRadius: number,
+    dummyUpdatesStep: number,
+    gpsPerturbatedDecimals: number
   ): Promise<FeatureCollection<Point>> {
     let params = new HttpParams()
       .set('swLong', southWest.lng)
       .set('swLat', southWest.lat)
       .set('neLong', northEast.lng)
       .set('neLat', northEast.lat)
-      .set('dummyUpdates', dummyUpdates)
-      .set('gpsPerturbated', gpsPerturbated);
+
+      .set('dummyLocation', dummyUpdates)
+      .set('gpsPerturbated', gpsPerturbated)
+      .set('dummyUpdatesRadiusMin', dummyUpdatesMinRadius)
+      .set('dummyUpdatesRadiusStep', dummyUpdatesStep)
+      .set('perturbatorDecimals', gpsPerturbatedDecimals);
 
     return await this.http
-      .get<FeatureCollection<Point>>(
-        environment.apiUrl + 'locations/samplesInArea',
-        {
-          params: params,
-        }
-      )
+      .get<FeatureCollection<Point>>(environment.apiUrl + 'samplesInArea', {
+        params: params,
+      })
       .toPromise();
   }
 
@@ -45,6 +49,9 @@ export class CommunicationService {
     northEast: LatLng,
     dummyUpdates: boolean,
     gpsPerturbated: boolean,
+    dummyUpdatesMinRadius: number,
+    dummyUpdatesStep: number,
+    gpsPerturbatedDecimals: number,
     k: number
   ): Promise<FeatureCollection<Point>> {
     let params = new HttpParams()
@@ -52,17 +59,17 @@ export class CommunicationService {
       .set('swLat', southWest.lat)
       .set('neLong', northEast.lng)
       .set('neLat', northEast.lat)
-      .set('dummyUpdates', dummyUpdates)
+      .set('dummyLocation', dummyUpdates)
       .set('gpsPerturbated', gpsPerturbated)
+      .set('dummyUpdatesRadiusMin', dummyUpdatesMinRadius)
+      .set('dummyUpdatesRadiusStep', dummyUpdatesStep)
+      .set('perturbatorDecimals', gpsPerturbatedDecimals)
       .set('k', k);
 
     return await this.http
-      .get<FeatureCollection<Point>>(
-        environment.apiUrl + 'locations/kmeansInArea',
-        {
-          params: params,
-        }
-      )
+      .get<FeatureCollection<Point>>(environment.apiUrl + 'kmeansInArea', {
+        params: params,
+      })
       .toPromise();
   }
 }

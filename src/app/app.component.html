@@ -20,9 +20,37 @@
         class="loading-img"
         *ngIf="!setDummyDone"
       />
-      <app-checkbox id="dummy" [enabled]="true" (change)="this.setDummy($event)"
+      <app-checkbox
+        id="dummy"
+        [checked]="dummyUpdates"
+        (change)="setDummy($event)"
         >Dummy Updates</app-checkbox
       >
+      <div *ngIf="dummyUpdates">
+        <label for="minRadius">Min radius:</label>
+        <select
+          name="minRadius"
+          id="minRadius"
+          [(ngModel)]="dummyUpdatesMinRadius"
+          (change)="setDummyOptions($event)"
+        >
+          <option *ngFor="let value of minRadiusValues" [value]="value">
+            {{ value }}
+          </option>
+        </select>
+
+        <label for="step">Step:</label>
+        <select
+          name="step"
+          id="step"
+          [(ngModel)]="dummyUpdatesStep"
+          (change)="setDummyOptions($event)"
+        >
+          <option *ngFor="let value of dummyUpdatesStepValues" [value]="value">
+            {{ value }}
+          </option>
+        </select>
+      </div>
     </span>
     <span>
       <img
@@ -32,30 +60,71 @@
       />
       <app-checkbox
         id="perturb"
-        [enabled]="true"
+        [checked]="gpsPerturbated"
         (change)="this.setGpsPerturbated($event)"
         >Gps Perturbated</app-checkbox
       >
+      <div *ngIf="gpsPerturbated">
+        <label for="perturbatorDecimals">Decimals:</label>
+        <select
+          name="perturbatorDecimals"
+          id="perturbatorDecimals"
+          [(ngModel)]="perturbatorDecimals"
+          (change)="setGpsPerturbatedOptions($event)"
+        >
+          <option
+            *ngFor="let value of perturbatorDecimalsValues"
+            [value]="value"
+          >
+            {{ value }}
+          </option>
+        </select>
+      </div>
     </span>
     <hr />
+    <input
+      type="radio"
+      name="samplesOrKmean"
+      id="nothing"
+      value="nothing"
+      (change)="showLayer($event)"
+      checked
+    />
+    <label for="nothing">Empty map</label>
+    <br />
     <span>
       <img
         src="../assets/loader.svg"
         class="loading-img"
         *ngIf="!showSamplesDone"
       />
-      <app-checkbox id="show_samples" (change)="showLayer($event)"
-        >Show Samples</app-checkbox
-      >
+      <input
+        type="radio"
+        name="samplesOrKmean"
+        id="samples"
+        value="samples"
+        (change)="showLayer($event)"
+      />
+      <label for="samples">Show Samples </label>
     </span>
+    <br />
     <span>
       <img
         src="../assets/loader.svg"
         class="loading-img"
         *ngIf="!showKMeanDone" />
-      <app-checkbox id="show_kmean" (change)="showLayer($event)"
-        >Show K-Mean</app-checkbox
-      ><input
+
+      <input
+        type="radio"
+        name="samplesOrKmean"
+        id="kmean"
+        value="kmean"
+        (change)="showLayer($event)" />
+      <label for="kmean">Show K-mean </label>
+      <br />
+      <label for="k-value"> k: </label>
+      <input
+        name="k-value"
         type="number"
         min="2"
         max="10"
@@ -68,7 +137,7 @@
         class="loading-img"
         *ngIf="!setGpsPerturbated"
       />
-      <app-checkbox id="show_heatmap" (change)="showLayer($event)"
+      <app-checkbox id="show_heatmap" (change)="showHeatmap($event)"
         >Show Heatmap</app-checkbox
       ></span
     >

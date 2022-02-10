@@ -75,8 +75,18 @@ export class AppComponent implements OnInit, AfterViewInit {
   userCoordinates: LatLng;
   mapHeight: number;
   k = 4;
-  dummyUpdates = true;
-  gpsPerturbated = true;
+
+  minRadiusValues = [500, 1_000, 1_500, 2_000, 3_000]; //min distance from the real point
+  dummyUpdatesStepValues = [250, 500, 750, 1_000, 2_000];
+  perturbatorDecimalsValues = [1, 2, 3, 4, 5];
+
+  dummyUpdatesMinRadius = this.minRadiusValues[0];
+  dummyUpdatesStep = this.dummyUpdatesStepValues[0];
+  perturbatorDecimals = this.perturbatorDecimalsValues[0];
+
+  dummyUpdates = false;
+  gpsPerturbated = false;
+
   startingService: boolean;
 
   changeMapHeight(windowHeight: number) {
@@ -85,33 +95,66 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   async showLayer(event: any) {
-    switch (event.target.id) {
-      case 'show_samples':
+    switch (event.target.value) {
+      case 'nothing': {
+        await this.mapComponent.enableSamplesMarkers(false);
+        await this.mapComponent.enableKmeansClustering(false);
+
+        break;
+      }
+
+      case 'samples':
+        await this.mapComponent.enableKmeansClustering(false);
+
         this.showSamplesDone = false;
         await this.mapComponent.enableSamplesMarkers(event.target.checked);
         this.showSamplesDone = true;
         break;
-      case 'show_kmean':
+
+      case 'kmean':
+        await this.mapComponent.enableSamplesMarkers(false);
+
         this.showKMeanDone = false;
         await this.mapComponent.enableKmeansClustering(event.target.checked);
         this.showKMeanDone = true;
         break;
-      case 'show_heatmap':
-        this.showHeatmapDone = false;
-        await this.mapComponent.enableHeatMap(event.target.checked);
-        this.showHeatmapDone = true;
-        break;
     }
   }
 
+  async showHeatmap(event: any) {
+    this.showHeatmapDone = false;
+    await this.mapComponent.enableHeatMap(event.target.checked);
+    this.showHeatmapDone = true;
+  }
+
   async setDummy(e: any) {
+    this.dummyUpdates = !this.dummyUpdates;
+
     this.setDummyDone = false;
-    await this.mapComponent.setDummy(e.target.checked);
+    this.setDummyOptions(e);
     this.setDummyDone = true;
   }
+
+  async setDummyOptions(e: any) {
+    await this.mapComponent.setDummy(
+      this.dummyUpdates,
+      this.dummyUpdatesMinRadius,
+      this.dummyUpdatesStep
+    );
+  }
+
   async setGpsPerturbated(e: any) {
+    this.gpsPerturbated = !this.gpsPerturbated;
+
     this.setPerturbatedDone = false;
-    await this.mapComponent.setGpsPerturbated(e.target.checked);
+    await this.setGpsPerturbatedOptions(e);
     this.setPerturbatedDone = true;
+  }
+
+  async setGpsPerturbatedOptions(e: any) {
+    await this.mapComponent.setGpsPerturbated(
+      this.gpsPerturbated,
+      this.perturbatorDecimals
+    );
   }
 }

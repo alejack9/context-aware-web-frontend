@@ -16,6 +16,7 @@ import {
   Map as LeafletMap,
   tileLayer,
   LatLngBounds,
+  CRS,
 } from 'leaflet';
 import { ClusteringService } from '../services/clustering.service';
 import { CommunicationService } from '../services/communication.service';
@@ -65,9 +66,6 @@ export class MapComponent implements AfterViewInit {
     this.map.invalidateSize();
   }
 
-  @Input('dummyUpdates') dummyUpdates: boolean = true;
-  @Input('gpsPerturbated') gpsPerturbated: boolean = true;
-
   @ViewChild('map') mapElement: ElementRef;
 
   private k: number;
@@ -77,6 +75,13 @@ export class MapComponent implements AfterViewInit {
 
   private layers = new Map<LayerName, Layer>();
 
+  private dummyUpdates = false;
+  private gpsPerturbated = false;
+
+  private dummyUpdatesMinRadius: number;
+  private dummyUpdatesStep: number;
+  private gpsPerturbatedDecimals: number;
+
   doneLoadingMoveEnd = true;
 
   private initMap(): void {
@@ -84,6 +89,7 @@ export class MapComponent implements AfterViewInit {
       center: [0, 0],
       zoom: this.minZoom,
       preferCanvas: true,
+      crs: CRS.EPSG3857,
     });
 
     const tiles = tileLayer(
@@ -107,11 +113,15 @@ export class MapComponent implements AfterViewInit {
 
   private async refreshLayers(refreshKMean = true) {
     let samples;
+
+    this.maxArea = this.map.getBounds();
+
     if (this.layers.has('samples')) {
       samples = await this.getRes('samples');
       this.showLayer('samples', samples);
     }
     if (refreshKMean) this.refreshKMean();
+
     if (this.layers.has('heatmap')) {
       this.showLayer('heatmap', samples);
     }
@@ -124,6 +134,7 @@ export class MapComponent implements AfterViewInit {
 
       await Promise.all([
         this.refreshKMean(),
+
         (async () => {
           if (!this.maxArea.contains(event.target.getBounds())) {
             this.maxArea = event.target.getBounds();
@@ -137,8 +148,11 @@ export class MapComponent implements AfterViewInit {
   }
 
   async enableLayer(toEnable: boolean, layer: LayerName) {
-    if (toEnable) await this.showLayer(layer);
-    else if (this.layers.has(layer)) {
+    this.maxArea = this.map.getBounds();
+
+    if (toEnable) {
+      await this.showLayer(layer);
+    } else if (this.layers.has(layer)) {
       this.map.removeLayer(this.layers.get(layer) as Layer);
       this.layers.delete(layer);
     }
@@ -156,12 +170,21 @@ export class MapComponent implements AfterViewInit {
     await this.enableLayer(toEnable, 'heatmap');
   }
 
-  async setDummy(e: boolean) {
-    this.dummyUpdates = e;
+  async setDummy(dummyUpdates: boolean, minRadius: number, step: number) {
+    this.dummyUpdates = dummyUpdates;
+    this.dummyUpdatesMinRadius = minRadius;
+    this.dummyUpdatesStep = step;
+
     await this.refreshLayers();
   }
-  async setGpsPerturbated(e: boolean) {
-    this.gpsPerturbated = e;
+
+  async setGpsPerturbated(
+    gpsPerturbated: boolean,
+    gpsPerturbatedDecimals: number
+  ) {
+    this.gpsPerturbated = gpsPerturbated;
+    this.gpsPerturbatedDecimals = gpsPerturbatedDecimals;
+
     await this.refreshLayers();
   }
 
@@ -214,7 +237,10 @@ export class MapComponent implements AfterViewInit {
           this.map.getBounds().getSouthWest(),
           this.map.getBounds().getNorthEast(),
           this.dummyUpdates,
-          this.gpsPerturbated
+          this.gpsPerturbated,
+          this.dummyUpdatesMinRadius,
+          this.dummyUpdatesStep,
+          this.gpsPerturbatedDecimals
         );
       case 'kmean':
         return await this.communicationService.getKmeansInArea(
@@ -222,6 +248,9 @@ export class MapComponent implements AfterViewInit {
           this.map.getBounds().getNorthEast(),
           this.dummyUpdates,
           this.gpsPerturbated,
+          this.dummyUpdatesMinRadius,
+          this.dummyUpdatesStep,
+          this.gpsPerturbatedDecimals,
           this.k
         );
     }
